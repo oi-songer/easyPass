@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(EasyPassApp());
 }
 
-class MyApp extends StatelessWidget {
+class EasyPassApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'EasyPass',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -109,5 +109,27 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+}
+
+class BackWrapper extends StatefulWidget {
+  const BackWrapper({
+    Key key,
+    this.study,
+    this.alignment = AlignmentDirectional.bottomStart,
+  }) : super(key: key);
+
+  final Widget study;
+  final AlignmentDirectional alignment;
+
+  @override
+  _BackWrapperState createState() => _BackWrapperState();
+}
+
+class _BackWrapperState extends State<BackWrapper> {
+  @override
+  Widget build(BuildContext context) {
+    final ColorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
   }
 }

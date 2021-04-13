@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class TestPage extends StatefulWidget {
-  TestPage({Key key, this.match}) : super(key: key);
+  TestPage({Key key, this.segments}) : super(key: key);
 
-  final String match;
+  final List<String> segments;
 
   @override
   _TestPageState createState() => _TestPageState();
@@ -17,7 +17,7 @@ class _TestPageState extends State<TestPage> {
         title: Text("test page"),
       ),
       body: Center(
-        child: Text(widget.match),
+        child: Text(widget.segments[0]),
       ),
     );
   }

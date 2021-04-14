@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,6 +15,7 @@ class HomePage extends StatefulWidget {
   // always marked "final".
 
   final List<String> segments;
+  String ret_value;
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -73,6 +76,19 @@ class _HomePageState extends State<HomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
             ),
+            TextButton(
+              onPressed: () {
+                return Navigator.of(context).pushNamed('/test/12', arguments: {
+                  "arg": "test2",
+                }).then((ret) {
+                  setState(() {
+                    widget.ret_value = ret;
+                  });
+                });
+              },
+              child: Text("testButton"),
+            ),
+            widget.ret_value == null ? Text("") : Text(widget.ret_value),
           ],
         ),
       ),

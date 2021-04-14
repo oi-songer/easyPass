@@ -12,13 +12,24 @@ class TestPage extends StatefulWidget {
 class _TestPageState extends State<TestPage> {
   @override
   Widget build(BuildContext context) {
+    dynamic args = ModalRoute.of(context).settings.arguments;
+    var arg = args == null ? '' : args['arg'];
     return Scaffold(
       appBar: AppBar(
         title: Text("test page"),
       ),
       body: Center(
-        child: Text(widget.segments[0]),
-      ),
+          child: Column(
+        children: [
+          Text(widget.segments[0]),
+          TextButton(
+            child: Text(arg + " Back"),
+            onPressed: () {
+              Navigator.of(context).pop("test_ret");
+            },
+          ),
+        ],
+      )),
     );
   }
 }

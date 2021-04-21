@@ -9,25 +9,14 @@ typedef PathWidgetBuilder = Widget Function(BuildContext, List<String>);
 
 /// Path类中包含一个用于匹配路径的正则str，和一个用于构造实际页面内容的builder
 class Path {
-  const Path(this.pattern, this.webBuilder, [this.phoneBuilder]);
-
-  /// 手动实现builder的getter，根据当前是否为手机和
-  /// 是否有手机专用builder来确定应该返回webBuilder还是phoneBuilder
-  PathWidgetBuilder get builder {
-    if (!kIsWeb && this.phoneBuilder != null) {
-      return this.phoneBuilder;
-    } else {
-      return this.webBuilder;
-    }
-  }
+  const Path(this.pattern, this.builder);
 
   final String pattern;
 
   // 分别指网页端的builder和手机端的builder，
   // 如果初始化时没有输入phoneBuilder，
   // 则手机也会使用webBuilder
-  final PathWidgetBuilder webBuilder;
-  final PathWidgetBuilder phoneBuilder;
+  final PathWidgetBuilder builder;
 }
 
 const homeRoute = '/';
@@ -39,8 +28,7 @@ class Routeconfiguration {
   static List<Path> paths = [
     Path(testRoute, (context, segments) => TestPage(segments: segments)),
     Path(loginRoute, (context, segments) => LoginPage()),
-    Path(homeRoute, (context, segments) => HomePage(),
-        (context, segments) => LoginPage()),
+    Path(homeRoute, (context, segments) => HomePage()),
   ];
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {

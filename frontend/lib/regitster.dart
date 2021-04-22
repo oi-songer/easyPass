@@ -1,11 +1,9 @@
-import 'package:easyPass/utils/app_theme.dart';
 import 'package:easyPass/utils/components.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class LoginPage extends StatelessWidget {
+class RegisterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,24 +31,27 @@ class LoginPage extends StatelessWidget {
                     restorationId: "username_text_field",
                     obscurText: true,
                   ),
-                  SizedBox(height: 100),
+                  SizedBox(height: 40),
+                  MyTextField(
+                    hintText: "请重复密码",
+                    restorationId: "username_text_field",
+                    obscurText: true,
+                  ),
+                  SizedBox(height: 50),
                   // _LoginButton(),
                   MyButton(
-                    child: Icon(FontAwesomeIcons.arrowRight,
-                        size: 50,
-                        color: AppTheme.buildLightTheme().backgroundColor),
+                    child: Text("注册"),
                   ),
                   SizedBox(height: 50),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('没有账号？'),
+                      Text('已有账号？'),
                       MaterialButton(
-                        child: Text("点此注册"),
+                        child: Text("点此登录"),
                         textColor: Colors.blue,
                         onPressed: () {
-                          Navigator.of(context)
-                              .pushReplacementNamed('/register');
+                          Navigator.of(context).pushReplacementNamed('/login');
                         },
                       ),
                     ],

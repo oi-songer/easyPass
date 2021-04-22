@@ -1,3 +1,4 @@
+import 'package:easyPass/regitster.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 // import 'package:easyPass/home.dart.bak';
@@ -22,11 +23,13 @@ class Path {
 const homeRoute = '/';
 const testRoute = '/test'; // TODO
 const loginRoute = '/login';
+const registerRoute = '/register';
 
 class Routeconfiguration {
   /// 所有的需要进行正则匹配的path
   static List<Path> paths = [
     Path(testRoute, (context, segments) => TestPage(segments: segments)),
+    Path(registerRoute, (context, segments) => RegisterPage()),
     Path(loginRoute, (context, segments) => LoginPage()),
     Path(homeRoute, (context, segments) => HomePage()),
   ];

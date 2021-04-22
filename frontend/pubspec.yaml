@@ -31,6 +31,7 @@ dependencies:
   adaptive_breakpoints: ^0.0.4
   flutter_gallery_assets: ^1.0.1
   flutter_svg: ^0.21.0
+  font_awesome_flutter: ^8.8.1
 
 dev_dependencies:
   flutter_test:

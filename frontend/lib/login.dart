@@ -1,4 +1,5 @@
 import 'package:easyPass/utils/app_theme.dart';
+import 'package:easyPass/utils/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -22,11 +23,23 @@ class LoginPage extends StatelessWidget {
                     'assets/images/logo/easypass-logo-with-text.svg',
                   ),
                   SizedBox(height: 120),
-                  _UsernameTextField(),
+                  MyTextField(
+                    hintText: "用户名",
+                    restorationId: "username_text_field",
+                  ),
                   SizedBox(height: 40),
-                  _PasswordTextField(),
+                  MyTextField(
+                    hintText: "密码",
+                    restorationId: "username_text_field",
+                    obscurText: true,
+                  ),
                   SizedBox(height: 100),
-                  _LoginButton(),
+                  // _LoginButton(),
+                  MyButton(
+                    child: Icon(FontAwesomeIcons.arrowRight,
+                        size: 50,
+                        color: AppTheme.buildLightTheme().backgroundColor),
+                  ),
                   SizedBox(height: 50),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -44,113 +57,6 @@ class LoginPage extends StatelessWidget {
                 ],
               ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _UsernameTextField extends StatelessWidget {
-  const _UsernameTextField();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.buildLightTheme().backgroundColor,
-        borderRadius: const BorderRadius.all(
-          Radius.circular(38.0),
-        ),
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              offset: const Offset(0, 2),
-              blurRadius: 8.0),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 4),
-        child: TextField(
-          textInputAction: TextInputAction.next,
-          restorationId: 'username_text_field',
-          cursorColor: AppTheme.buildLightTheme().primaryColor,
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            hintText: '用户名',
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _PasswordTextField extends StatelessWidget {
-  const _PasswordTextField();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.buildLightTheme().backgroundColor,
-        borderRadius: const BorderRadius.all(
-          Radius.circular(38.0),
-        ),
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              offset: const Offset(0, 2),
-              blurRadius: 8.0),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 4),
-        child: TextField(
-          textInputAction: TextInputAction.next,
-          restorationId: 'password_text_field',
-          cursorColor: AppTheme.buildLightTheme().primaryColor,
-          obscureText: true,
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            hintText: '密码',
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _LoginButton extends StatelessWidget {
-  const _LoginButton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.buildLightTheme().primaryColor,
-        borderRadius: const BorderRadius.all(
-          Radius.circular(45.0),
-        ),
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-              color: Colors.grey.withOpacity(0.4),
-              offset: const Offset(0, 2),
-              blurRadius: 8.0),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: const BorderRadius.all(
-            Radius.circular(45.0),
-          ),
-          onTap: () {
-            FocusScope.of(context).requestFocus(FocusNode());
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Icon(FontAwesomeIcons.arrowRight,
-                size: 50, color: AppTheme.buildLightTheme().backgroundColor),
           ),
         ),
       ),

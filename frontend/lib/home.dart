@@ -10,7 +10,11 @@ class HomePage extends StatelessWidget {
           title: Text('HomePage'),
         ),
         body: Center(
-          child: Text('This is homepage'),
+          child: MaterialButton(
+              child: Text("This is button"),
+              onPressed: () {
+                Navigator.of(context).pushNamed('/login');
+              }),
         ));
   }
 }

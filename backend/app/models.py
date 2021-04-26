@@ -10,7 +10,7 @@ class User(db.Model):
     password = db.Column(db.String(32))
 
     companies = db.relationship(
-        'UserCompany', backref='company', lazy='dynamic')
+        'UserCompany', backref='user', lazy='dynamic')
     infos = db.relationship('Info', backref='owner', lazy='dynamic')
 
     def __init__(self, username, email, password):
@@ -69,8 +69,6 @@ class InfoWrapper(db.Model):
 class UserCompanyRela(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('User.id'))
-    company_id = db.Column(db.Integer, db.ForeignKey('Company.id'))
 
     login_histories = db.relationship(
         'LoginHistory', backref='user_company_rela', lazy='dynamic')
@@ -90,3 +88,4 @@ class LoginHistory(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     ip = db.Column(db.String(30))
+    device = db.Column(db.String(20))

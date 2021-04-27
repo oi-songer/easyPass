@@ -1,6 +1,11 @@
 import os
+import click
 
 from flask import Flask
+from flask.cli import with_appcontext
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
 
 # 该函数是一个应用工厂函数
 def create_app(test_config=None):
@@ -13,7 +18,7 @@ def create_app(test_config=None):
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
-        app.config.from_pyfile('config.py', silent=True)
+        app.config.from_pyfile('../config.py', silent=True)
     else:
         # load the test config if passed in
         app.config.from_mapping(test_config)
@@ -25,13 +30,29 @@ def create_app(test_config=None):
     #     pass
 
     # init database
-    from . import db
     db.init_app(app)
+    app.cli.add_command(init_db)
 
     from . import views
     app.register_blueprint(views.bp)
 
     # a simple page that says hello
-    
 
     return app
+
+@click.command('init-db')
+@with_appcontext
+def init_db():
+    # 这里要先import models，才能根据models结构来create数据库表
+    from . import models
+    db.create_all()
+    
+    click.echo('Initialized the database.')
+
+@click.command('drop-db')
+@with_appcontext
+def drop_db():
+    from . import models
+    db.drop_all()
+    
+    click.echo('Dropped the database.')

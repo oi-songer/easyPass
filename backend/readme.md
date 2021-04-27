@@ -2,13 +2,17 @@
 
 ## TODO
 
+- [ ] setup mysql
+- [ ] 配置部署环境
 - [ ] [设置Flask的Scret Key](https://dormousehole.readthedocs.io/en/latest/tutorial/factory.html#id2)
 
 ## 环境
 
 - `python3.6`
 - `venv`
+- `nginx`
 - `uwsgi`
+- `gevent`
 - `flask`
 - `mysql`
 
@@ -36,3 +40,5 @@ source ./venv/bin/activate
 
 - 用户：
     - 用户名为`easypass`，密码见Keeweb
+
+## 配置

@@ -1,3 +1,4 @@
+import 'package:easyPass/utils/bottom_bar.dart';
 import 'package:flutter/material.dart';
 
 class TestPage extends StatefulWidget {
@@ -18,18 +19,17 @@ class _TestPageState extends State<TestPage> {
       appBar: AppBar(
         title: Text("test page"),
       ),
-      body: Center(
-          child: Column(
+      body: Stack(
         children: [
-          Text(widget.segments[0]),
-          TextButton(
-            child: Text(arg + " Back"),
-            onPressed: () {
-              Navigator.of(context).pop("test_ret");
-            },
+          Center(
+            child: Column(
+              children: [
+                Text(widget.segments[0]),
+              ],
+            ),
           ),
         ],
-      )),
+      ),
     );
   }
 }

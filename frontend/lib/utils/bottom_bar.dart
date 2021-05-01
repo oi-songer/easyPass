@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:easyPass/utils/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class BottomBar extends StatefulWidget {
   const BottomBar();
@@ -27,7 +28,7 @@ class _BottomBarState extends State<BottomBar> {
                 color: AppTheme.white,
                 elevation: 16.0,
                 clipper: TabClipper(
-                  radius: 40.0,
+                  radius: 38.0,
                 ),
                 child: Column(
                   children: <Widget>[
@@ -40,37 +41,108 @@ class _BottomBarState extends State<BottomBar> {
                             children: [
                               Expanded(
                                 child: Center(
-                                  child: Text("Page1"),
+                                  child: SvgPicture.asset(
+                                    'assets/images/icon/shouye.svg',
+                                    width: 40,
+                                  ),
                                 ),
                               ),
                               Expanded(
                                 child: Center(
-                                  child: Text("Page2"),
+                                  child: SvgPicture.asset(
+                                    'assets/images/icon/wenjian_before.svg',
+                                    width: 40,
+                                  ),
                                 ),
                               ),
                               SizedBox(
-                                width: 40,
+                                width: 64,
                               ),
                               Expanded(
                                 child: Center(
-                                  child: Text("Page3"),
+                                  child: SvgPicture.asset(
+                                    'assets/images/icon/jiankong_before.svg',
+                                    width: 40,
+                                  ),
                                 ),
                               ),
                               Expanded(
                                 child: Center(
-                                  child: Text("Page4"),
+                                  child: SvgPicture.asset(
+                                    'assets/images/icon/shezhi_before.svg',
+                                    width: 40,
+                                  ),
                                 ),
                               ),
                             ],
                           )),
                     ),
+                    SizedBox(
+                      height: MediaQuery.of(context).padding.bottom,
+                    ),
                   ],
                 ),
               ),
             ),
-            // SizedBox(
-            //   height: MediaQuery.of(context).padding.bottom,
-            // )
+            Padding(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).padding.bottom),
+              child: SizedBox(
+                width: 38 * 2.0,
+                height: 38 + 62.0,
+                child: Container(
+                  alignment: Alignment.topCenter,
+                  color: Colors.transparent,
+                  child: SizedBox(
+                    width: 38 * 2.0,
+                    height: 38 * 2.0,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: AppTheme.nearlyBlack,
+                          gradient: LinearGradient(
+                            colors: [
+                              AppTheme.heavyGreen,
+                              AppTheme.mainGreen,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          shape: BoxShape.circle,
+                          boxShadow: <BoxShadow>[
+                            BoxShadow(
+                              color: AppTheme.heavyGreen.withOpacity(0.4),
+                              offset: const Offset(8.0, 16.0),
+                              blurRadius: 16.0,
+                            ),
+                          ],
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            splashColor: Colors.white.withOpacity(0.1),
+                            highlightColor: Colors.transparent,
+                            focusColor: Colors.transparent,
+                            onTap: () {
+                              // TODO
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: SvgPicture.asset(
+                                'assets/images/icon/saoma_before.svg',
+                                color: AppTheme.nearlyWhite,
+                                width: 40,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ],

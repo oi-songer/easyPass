@@ -15,6 +15,10 @@ class HexColor extends Color {
 class AppTheme {
   AppTheme._();
 
+  static const Color mainGreen = Color(0xFF42D3AD);
+  static const Color heavyGreen = Color(0xFF12A35D);
+  static const Color lightGreen = Color(0xFF56E5BE);
+
   static const Color notWhite = Color(0xFFEDF0F2);
   static const Color nearlyWhite = Color(0xFFFEFEFE);
   static const Color white = Color(0xFFFFFFFF);
@@ -125,8 +129,9 @@ class AppTheme {
   }
 
   static ThemeData buildLightTheme() {
-    final Color primaryColor = HexColor('#54D3C2');
-    final Color secondaryColor = HexColor('#54D3C2');
+    final Color primaryColor = HexColor('#42D3AD');
+    // final Color primaryColor = HexColor('#54D3C2');
+    final Color secondaryColor = HexColor('#42D3AD');
     final ColorScheme colorScheme = const ColorScheme.light().copyWith(
       primary: primaryColor,
       secondary: secondaryColor,

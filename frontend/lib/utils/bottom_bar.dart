@@ -3,9 +3,12 @@ import 'dart:math' as math;
 import 'package:easyPass/utils/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:inkwell_splash/inkwell_splash.dart';
 
 class BottomBar extends StatefulWidget {
-  const BottomBar();
+  const BottomBar({this.selectedPage});
+
+  final String selectedPage;
 
   @override
   _BottomBarState createState() => _BottomBarState();
@@ -41,17 +44,69 @@ class _BottomBarState extends State<BottomBar> {
                             children: [
                               Expanded(
                                 child: Center(
-                                  child: SvgPicture.asset(
-                                    'assets/images/icon/shouye.svg',
-                                    width: 40,
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: InkWellSplash(
+                                      splashFactory: InkRipple.splashFactory,
+                                      child: Container(
+                                        padding: const EdgeInsets.only(
+                                          left: 20,
+                                          right: 20,
+                                          top: 10,
+                                          bottom: 10,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(10.0),
+                                          ),
+                                        ),
+                                        child: SvgPicture.asset(
+                                          widget.selectedPage == 'home'
+                                              ? 'assets/images/icon/shouye.svg'
+                                              : 'assets/images/icon/shouye_before.svg',
+                                          width: 40,
+                                        ),
+                                      ),
+                                      splashColor: AppTheme.lightGreen,
+                                      onTap: () {
+                                        Navigator.of(context)
+                                            .pushReplacementNamed('/home');
+                                      },
+                                    ),
                                   ),
                                 ),
                               ),
                               Expanded(
                                 child: Center(
-                                  child: SvgPicture.asset(
-                                    'assets/images/icon/wenjian_before.svg',
-                                    width: 40,
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: InkWellSplash(
+                                      splashFactory: InkRipple.splashFactory,
+                                      child: Container(
+                                        padding: const EdgeInsets.only(
+                                          left: 20,
+                                          right: 20,
+                                          top: 10,
+                                          bottom: 10,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(10.0),
+                                          ),
+                                        ),
+                                        child: SvgPicture.asset(
+                                          widget.selectedPage == 'company'
+                                              ? 'assets/images/icon/jiankong.svg'
+                                              : 'assets/images/icon/jiankong_before.svg',
+                                          width: 40,
+                                        ),
+                                      ),
+                                      splashColor: AppTheme.lightGreen,
+                                      onTap: () {
+                                        Navigator.of(context)
+                                            .pushReplacementNamed('/home');
+                                      },
+                                    ),
                                   ),
                                 ),
                               ),
@@ -60,17 +115,69 @@ class _BottomBarState extends State<BottomBar> {
                               ),
                               Expanded(
                                 child: Center(
-                                  child: SvgPicture.asset(
-                                    'assets/images/icon/jiankong_before.svg',
-                                    width: 40,
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: InkWellSplash(
+                                      splashFactory: InkRipple.splashFactory,
+                                      child: Container(
+                                        padding: const EdgeInsets.only(
+                                          left: 20,
+                                          right: 20,
+                                          top: 10,
+                                          bottom: 10,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(10.0),
+                                          ),
+                                        ),
+                                        child: SvgPicture.asset(
+                                          widget.selectedPage == 'info'
+                                              ? 'assets/images/icon/wenjian.svg'
+                                              : 'assets/images/icon/wenjian_before.svg',
+                                          width: 40,
+                                        ),
+                                      ),
+                                      splashColor: AppTheme.lightGreen,
+                                      onTap: () {
+                                        Navigator.of(context)
+                                            .pushReplacementNamed('/home');
+                                      },
+                                    ),
                                   ),
                                 ),
                               ),
                               Expanded(
                                 child: Center(
-                                  child: SvgPicture.asset(
-                                    'assets/images/icon/shezhi_before.svg',
-                                    width: 40,
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: InkWellSplash(
+                                      splashFactory: InkRipple.splashFactory,
+                                      child: Container(
+                                        padding: const EdgeInsets.only(
+                                          left: 20,
+                                          right: 20,
+                                          top: 10,
+                                          bottom: 10,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(10.0),
+                                          ),
+                                        ),
+                                        child: SvgPicture.asset(
+                                          widget.selectedPage == 'settings'
+                                              ? 'assets/images/icon/shezhi.svg'
+                                              : 'assets/images/icon/shezhi_before.svg',
+                                          width: 40,
+                                        ),
+                                      ),
+                                      splashColor: AppTheme.lightGreen,
+                                      onTap: () {
+                                        Navigator.of(context)
+                                            .pushReplacementNamed('/settings');
+                                      },
+                                    ),
                                   ),
                                 ),
                               ),

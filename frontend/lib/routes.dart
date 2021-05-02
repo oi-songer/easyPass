@@ -1,8 +1,13 @@
+import 'dart:js';
+
 import 'package:easyPass/regitster.dart';
+import 'package:easyPass/user/accounts.dart';
+import 'package:easyPass/user/home.dart';
+import 'package:easyPass/user/info.dart';
+import 'package:easyPass/user/settings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-// import 'package:easyPass/home.dart.bak';
-import 'package:easyPass/home.dart';
+import 'package:easyPass/welcome.dart';
 import 'package:easyPass/test.dart';
 import 'package:easyPass/login.dart';
 
@@ -20,10 +25,15 @@ class Path {
   final PathWidgetBuilder builder;
 }
 
-const homeRoute = '/';
+const welcomeRoute = '/';
 const testRoute = '/test'; // TODO
 const loginRoute = '/login';
 const registerRoute = '/register';
+
+const homeRoute = '/home';
+const infoRoute = '/info';
+const accountsRoute = '/accounts';
+const settingsRoute = '/settings';
 
 class Routeconfiguration {
   /// 所有的需要进行正则匹配的path
@@ -32,6 +42,10 @@ class Routeconfiguration {
     Path(registerRoute, (context, segments) => RegisterPage()),
     Path(loginRoute, (context, segments) => LoginPage()),
     Path(homeRoute, (context, segments) => HomePage()),
+    Path(accountsRoute, (context, segments) => AccountsPage()),
+    Path(infoRoute, (context, segments) => InfoPage()),
+    Path(settingsRoute, (context, segments) => SettingsPage()),
+    Path(welcomeRoute, (context, segments) => WelcomePage()),
   ];
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {

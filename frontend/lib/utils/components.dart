@@ -43,10 +43,11 @@ class MyTextField extends StatelessWidget {
 }
 
 class MyButton extends StatelessWidget {
-  const MyButton({this.child, this.radius = 45.0});
+  const MyButton({this.child, this.onTap, this.radius = 45.0});
 
   final Widget child;
   final double radius;
+  final Function onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -69,9 +70,7 @@ class MyButton extends StatelessWidget {
           borderRadius: new BorderRadius.all(
             Radius.circular(this.radius),
           ),
-          onTap: () {
-            FocusScope.of(context).requestFocus(FocusNode());
-          },
+          onTap: this.onTap,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: this.child,

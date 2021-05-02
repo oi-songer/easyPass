@@ -36,9 +36,15 @@ class LoginPage extends StatelessWidget {
                   SizedBox(height: 100),
                   // _LoginButton(),
                   MyButton(
-                    child: Icon(FontAwesomeIcons.arrowRight,
-                        size: 50,
-                        color: AppTheme.buildLightTheme().backgroundColor),
+                    child: Icon(
+                      FontAwesomeIcons.arrowRight,
+                      size: 50,
+                      color: AppTheme.buildLightTheme().backgroundColor,
+                    ),
+                    onTap: () {
+                      Navigator.of(context)
+                          .pushNamedAndRemoveUntil('/home', (route) => false);
+                    },
                   ),
                   SizedBox(height: 50),
                   Row(

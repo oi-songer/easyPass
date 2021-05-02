@@ -95,7 +95,7 @@ class _BottomBarState extends State<BottomBar> {
                                           ),
                                         ),
                                         child: SvgPicture.asset(
-                                          widget.selectedPage == 'company'
+                                          widget.selectedPage == 'accounts'
                                               ? 'assets/images/icon/jiankong.svg'
                                               : 'assets/images/icon/jiankong_before.svg',
                                           width: 40,
@@ -104,7 +104,7 @@ class _BottomBarState extends State<BottomBar> {
                                       splashColor: AppTheme.lightGreen,
                                       onTap: () {
                                         Navigator.of(context)
-                                            .pushReplacementNamed('/home');
+                                            .pushReplacementNamed('/accounts');
                                       },
                                     ),
                                   ),
@@ -141,7 +141,7 @@ class _BottomBarState extends State<BottomBar> {
                                       splashColor: AppTheme.lightGreen,
                                       onTap: () {
                                         Navigator.of(context)
-                                            .pushReplacementNamed('/home');
+                                            .pushReplacementNamed('/info');
                                       },
                                     ),
                                   ),

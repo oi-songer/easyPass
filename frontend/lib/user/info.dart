@@ -9,7 +9,7 @@ class InfoPage extends StatelessWidget {
         children: [
           Center(
             child: Text("This is info page."),
-          ),
+          ), // TODO
           BottomBar(
             selectedPage: 'info',
           ),

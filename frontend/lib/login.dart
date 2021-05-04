@@ -1,11 +1,22 @@
+import 'package:easyPass/model/user.dart';
 import 'package:easyPass/utils/app_theme.dart';
 import 'package:easyPass/utils/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  LoginPage();
+
+  @override
+  _LoginPageState createState() => new _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,12 +37,14 @@ class LoginPage extends StatelessWidget {
                   MyTextField(
                     hintText: "用户名",
                     restorationId: "username_text_field",
+                    controller: usernameController,
                   ),
                   SizedBox(height: 40),
                   MyTextField(
                     hintText: "密码",
                     restorationId: "username_text_field",
                     obscurText: true,
+                    controller: passwordController,
                   ),
                   SizedBox(height: 100),
                   // _LoginButton(),
@@ -42,8 +55,29 @@ class LoginPage extends StatelessWidget {
                       color: AppTheme.buildLightTheme().backgroundColor,
                     ),
                     onTap: () {
-                      Navigator.of(context)
-                          .pushNamedAndRemoveUntil('/home', (route) => false);
+                      var username = usernameController.text;
+                      var password = passwordController.text;
+                      var user = User(
+                        username: username,
+                        password: password,
+                      );
+
+                      user.login().then(
+                        (response) {
+                          if (response.data == 'success') {
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                                '/home', (route) => false);
+                          } else {
+                            Fluttertoast.showToast(
+                                msg: response.data,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                                webPosition: "center");
+                          }
+                        },
+                      );
+
+                      //
                     },
                   ),
                   SizedBox(height: 50),

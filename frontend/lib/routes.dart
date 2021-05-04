@@ -1,5 +1,3 @@
-import 'dart:js';
-
 import 'package:easyPass/regitster.dart';
 import 'package:easyPass/user/accounts.dart';
 import 'package:easyPass/user/home.dart';
@@ -35,6 +33,13 @@ const infoRoute = '/info';
 const accountsRoute = '/accounts';
 const settingsRoute = '/settings';
 
+const userRouteList = [
+  homeRoute,
+  infoRoute,
+  accountsRoute,
+  settingsRoute,
+];
+
 class Routeconfiguration {
   /// 所有的需要进行正则匹配的path
   static List<Path> paths = [
@@ -60,6 +65,12 @@ class Routeconfiguration {
         final segments = segmentsTmp;
 
         if (kIsWeb) {
+          return NoAnimationMaterialPageRoute<void>(
+            builder: (context) => path.builder(context, segments),
+            settings: settings,
+          );
+        }
+        if (userRouteList.contains(settings.name)) {
           return NoAnimationMaterialPageRoute<void>(
             builder: (context) => path.builder(context, segments),
             settings: settings,

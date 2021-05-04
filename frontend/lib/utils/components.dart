@@ -2,13 +2,24 @@ import 'package:easyPass/utils/app_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+const TitleTextStyle = const TextStyle(
+  fontFamily: "Jiangcheng",
+  fontSize: 40,
+  fontWeight: FontWeight.w600,
+);
+
 class MyTextField extends StatelessWidget {
-  const MyTextField(
-      {this.hintText, this.restorationId, this.obscurText = false});
+  const MyTextField({
+    this.hintText,
+    this.restorationId,
+    this.controller,
+    this.obscurText = false,
+  });
 
   final String hintText;
   final String restorationId;
   final bool obscurText;
+  final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +39,7 @@ class MyTextField extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 4),
         child: TextField(
+          controller: controller,
           textInputAction: TextInputAction.next,
           restorationId: this.restorationId,
           cursorColor: AppTheme.buildLightTheme().primaryColor,

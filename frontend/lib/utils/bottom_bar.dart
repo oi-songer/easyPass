@@ -2,8 +2,10 @@ import 'dart:math' as math;
 
 import 'package:easyPass/utils/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inkwell_splash/inkwell_splash.dart';
+import 'package:barcode_scan/barcode_scan.dart';
 
 class BottomBar extends StatefulWidget {
   const BottomBar({this.selectedPage});
@@ -50,8 +52,8 @@ class _BottomBarState extends State<BottomBar> {
                                       splashFactory: InkRipple.splashFactory,
                                       child: Container(
                                         padding: const EdgeInsets.only(
-                                          left: 20,
-                                          right: 20,
+                                          left: 10,
+                                          right: 10,
                                           top: 10,
                                           bottom: 10,
                                         ),
@@ -67,7 +69,7 @@ class _BottomBarState extends State<BottomBar> {
                                           width: 40,
                                         ),
                                       ),
-                                      splashColor: AppTheme.lightGreen,
+                                      // splashColor: AppTheme.lightGreen,
                                       onTap: () {
                                         Navigator.of(context)
                                             .pushReplacementNamed('/home');
@@ -84,8 +86,8 @@ class _BottomBarState extends State<BottomBar> {
                                       splashFactory: InkRipple.splashFactory,
                                       child: Container(
                                         padding: const EdgeInsets.only(
-                                          left: 20,
-                                          right: 20,
+                                          left: 10,
+                                          right: 10,
                                           top: 10,
                                           bottom: 10,
                                         ),
@@ -101,7 +103,7 @@ class _BottomBarState extends State<BottomBar> {
                                           width: 40,
                                         ),
                                       ),
-                                      splashColor: AppTheme.lightGreen,
+                                      // splashColor: AppTheme.lightGreen,
                                       onTap: () {
                                         Navigator.of(context)
                                             .pushReplacementNamed('/accounts');
@@ -121,8 +123,8 @@ class _BottomBarState extends State<BottomBar> {
                                       splashFactory: InkRipple.splashFactory,
                                       child: Container(
                                         padding: const EdgeInsets.only(
-                                          left: 20,
-                                          right: 20,
+                                          left: 10,
+                                          right: 10,
                                           top: 10,
                                           bottom: 10,
                                         ),
@@ -138,7 +140,7 @@ class _BottomBarState extends State<BottomBar> {
                                           width: 40,
                                         ),
                                       ),
-                                      splashColor: AppTheme.lightGreen,
+                                      // splashColor: AppTheme.lightGreen,
                                       onTap: () {
                                         Navigator.of(context)
                                             .pushReplacementNamed('/info');
@@ -155,8 +157,8 @@ class _BottomBarState extends State<BottomBar> {
                                       splashFactory: InkRipple.splashFactory,
                                       child: Container(
                                         padding: const EdgeInsets.only(
-                                          left: 20,
-                                          right: 20,
+                                          left: 10,
+                                          right: 10,
                                           top: 10,
                                           bottom: 10,
                                         ),
@@ -172,7 +174,7 @@ class _BottomBarState extends State<BottomBar> {
                                           width: 40,
                                         ),
                                       ),
-                                      splashColor: AppTheme.lightGreen,
+                                      // splashColor: AppTheme.lightGreen,
                                       onTap: () {
                                         Navigator.of(context)
                                             .pushReplacementNamed('/settings');
@@ -232,7 +234,7 @@ class _BottomBarState extends State<BottomBar> {
                             highlightColor: Colors.transparent,
                             focusColor: Colors.transparent,
                             onTap: () {
-                              // TODO
+                              scan();
                             },
                             child: Padding(
                               padding: const EdgeInsets.all(10),
@@ -302,5 +304,30 @@ class TabClipper extends CustomClipper<Path> {
   double degreeToRadians(double degree) {
     final double redian = (math.pi / 180) * degree;
     return redian;
+  }
+}
+
+//  扫描二维码
+Future scan() async {
+  try {
+    // 此处为扫码结果，barcode为二维码的内容
+    String barcode = await BarcodeScanner.scan();
+    print('扫码结果: ' + barcode);
+    // TODO 跳转到确认界面
+  } on PlatformException catch (e) {
+    if (e.code == BarcodeScanner.CameraAccessDenied) {
+      // 未授予APP相机权限
+      // TODO 使用弹窗提示
+      print('未授予APP相机权限');
+    } else {
+      // 扫码错误
+      print('扫码错误: $e');
+    }
+  } on FormatException {
+    // 进入扫码页面后未扫码就返回
+    print('进入扫码页面后未扫码就返回');
+  } catch (e) {
+    // 扫码错误
+    print('扫码错误: $e');
   }
 }

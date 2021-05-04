@@ -27,12 +27,16 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.2
-  adaptive_breakpoints: ^0.0.4
-  flutter_gallery_assets: ^1.0.1
-  flutter_svg: ^0.21.0
+  # cupertino_icons: ^1.0.2
+  # adaptive_breakpoints: ^0.0.4
+  # flutter_gallery_assets: ^1.0.1
+  flutter_svg: ^0.21.0  # svg图片解析
   font_awesome_flutter: ^8.8.1
-  inkwell_splash: ^0.0.1
+  inkwell_splash: ^0.0.1  # 带有波纹的按钮
+  barcode_scan: ^1.0.0    # 二维码识别
+  # http: ^0.13.3
+  dio: ^4.0.0   # http包
+  fluttertoast: ^4.0.1    # toast功能
 
 dev_dependencies:
   flutter_test:
@@ -68,6 +72,33 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
+  fonts:
+    - family: Oppo Sans
+      fonts:
+        - asset: assets/fonts/OppoSans/OPPOSans-L.ttf
+          weight: 300
+        - asset: assets/fonts/OppoSans/OPPOSans-R.ttf
+        - asset: assets/fonts/OppoSans/OPPOSans-M.ttf
+          weight: 500
+        - asset: assets/fonts/OppoSans/OPPOSans-B.ttf
+          weight: 700
+        - asset: assets/fonts/OppoSans/OPPOSans-H.ttf
+          weight: 800
+    - family: Jiangcheng
+      fonts:
+        - asset: assets/fonts/Jiangcheng/Jiangcheng-200W.ttf
+          weight: 200
+        - asset: assets/fonts/Jiangcheng/Jiangcheng-300W.ttf
+          weight: 300
+        - asset: assets/fonts/Jiangcheng/Jiangcheng-400W.ttf
+          weight: 400
+        - asset: assets/fonts/Jiangcheng/Jiangcheng-500W.ttf
+          weight: 500
+        - asset: assets/fonts/Jiangcheng/Jiangcheng-600W.ttf
+          weight: 600
+        - asset: assets/fonts/Jiangcheng/Jiangcheng-700W.ttf
+          weight: 700
+        
   # fonts:
   #   - family: Schyler
   #     fonts:

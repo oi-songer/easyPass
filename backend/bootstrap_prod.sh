@@ -1,1 +1,1 @@
-uwsgi -s /tmp/yourapplication.sock --manage-script-name --mount /yourapplication=hello:app
+uwsgi -s /tmp/yourapplication.sock --manage-script-name --mount /api=app:create_app

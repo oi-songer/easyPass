@@ -132,7 +132,7 @@ class MyInfoCard extends StatelessWidget {
             // TODO
           },
           child: SizedBox(
-            height: 200,
+            height: 170,
             child: ClipRRect(
               borderRadius: const BorderRadius.all(Radius.circular(16.0)),
               child: Container(
@@ -164,6 +164,7 @@ class MyInfoCard extends StatelessWidget {
                         Padding(
                           padding: new EdgeInsets.only(left: 20, top: 10),
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
                                 "内容：",
@@ -183,6 +184,7 @@ class MyInfoCard extends StatelessWidget {
                         Padding(
                           padding: new EdgeInsets.only(left: 10, top: 10),
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 "test_username",
@@ -194,6 +196,128 @@ class MyInfoCard extends StatelessWidget {
                               ),
                               Text(
                                 "2021/05/02",
+                                style: InfoCardLeftTextStyle,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Expanded(
+                      child: SizedBox(),
+                    ),
+                    Container(
+                      alignment: AlignmentDirectional.bottomEnd,
+                      child: Padding(
+                        padding: new EdgeInsets.only(right: 10, bottom: 10),
+                        child: Text("···"),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class MyAccountCard extends StatelessWidget {
+  const MyAccountCard(
+      {this.companyName, this.accountName, this.loginTime, this.infoCount});
+
+  final String companyName;
+  final String accountName;
+  final String loginTime;
+
+  final int infoCount;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 24, right: 24, top: 8, bottom: 16),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.6),
+              offset: const Offset(4, 4),
+              blurRadius: 16,
+            ),
+          ],
+        ),
+        child: InkWell(
+          onTap: () {
+            // TODO
+          },
+          child: SizedBox(
+            height: 170,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+              child: Container(
+                color: AppTheme.white,
+                child: Column(
+                  children: [
+                    Container(
+                      alignment: AlignmentDirectional.topStart,
+                      child: Padding(
+                        padding: new EdgeInsets.only(
+                          left: 30,
+                          top: 10,
+                          bottom: 10,
+                        ),
+                        child: Text(
+                          companyName,
+                          style: InfoCardTitleTextStyle,
+                        ),
+                      ),
+                    ),
+                    Divider(
+                      height: 1.0,
+                      indent: 20.0,
+                      endIndent: 300.0,
+                      color: Colors.grey,
+                    ),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: new EdgeInsets.only(left: 20, top: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                "账户名：",
+                                style: InfoCardLeftTextStyle,
+                              ),
+                              Text(
+                                "信息授权数量：",
+                                style: InfoCardLeftTextStyle,
+                              ),
+                              Text(
+                                "最后登录日期：",
+                                style: InfoCardLeftTextStyle,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: new EdgeInsets.only(left: 10, top: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                accountName,
+                                style: InfoCardLeftTextStyle,
+                              ),
+                              Text(
+                                infoCount.toString(),
+                                style: InfoCardLeftTextStyle,
+                              ),
+                              Text(
+                                loginTime,
                                 style: InfoCardLeftTextStyle,
                               ),
                             ],

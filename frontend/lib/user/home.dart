@@ -9,19 +9,20 @@ class HomePage extends StatelessWidget {
       body: Stack(
         children: [
           Container(
-              child: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 20, left: 20, bottom: 20),
-                child: Text(
-                  // TODO 移动位置
-                  "主页",
-                  style: TitleTextStyle,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 20, left: 20, bottom: 20),
+                  child: Text(
+                    // TODO 移动位置
+                    "主页",
+                    style: TitleTextStyle,
+                  ),
                 ),
-              ),
-              // TODO add content
-            ],
-          )),
+                // TODO add content
+              ],
+            ),
+          ),
           BottomBar(
             selectedPage: 'home',
           ),

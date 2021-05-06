@@ -57,27 +57,8 @@ class _LoginPageState extends State<LoginPage> {
                     onTap: () {
                       var username = usernameController.text;
                       var password = passwordController.text;
-                      var user = User(
-                        username: username,
-                        password: password,
-                      );
 
-                      user.login().then(
-                        (response) {
-                          if (response.data == 'success') {
-                            Navigator.of(context).pushNamedAndRemoveUntil(
-                                '/home', (route) => false);
-                          } else {
-                            Fluttertoast.showToast(
-                                msg: response.data,
-                                gravity: ToastGravity.BOTTOM,
-                                timeInSecForIosWeb: 1,
-                                webPosition: "center");
-                          }
-                        },
-                      );
-
-                      //
+                      _login(context, username, password);
                     },
                   ),
                   SizedBox(height: 50),
@@ -103,4 +84,27 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+}
+
+void _login(context, username, password) {
+  var user = User(
+    username: username,
+    password: password,
+  );
+
+  user.login().then(
+    (response) {
+      if (true) {
+        // if (response.data == 'success') {
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/home', (route) => false);
+      } else {
+        Fluttertoast.showToast(
+            msg: response.data,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            webPosition: "center");
+      }
+    },
+  );
 }

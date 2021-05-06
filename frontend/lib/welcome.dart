@@ -1,4 +1,5 @@
 import 'package:easyPass/utils/bottom_bar.dart';
+import 'package:easyPass/utils/components.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -18,7 +19,10 @@ class WelcomePage extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).pushNamed('/login');
                 }),
-          )
+          ),
+          MyInfoCard(
+            categoryName: "test",
+          ),
         ],
       ),
     );

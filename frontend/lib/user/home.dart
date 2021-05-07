@@ -1,10 +1,17 @@
-import 'package:easyPass/utils/bottom_bar.dart';
-import 'package:easyPass/utils/components.dart';
+import 'package:easy_pass/login.dart';
+import 'package:easy_pass/utils/bottom_bar.dart';
+import 'package:easy_pass/utils/components.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    checkLogin().then((valid) {
+      if (valid == false) {
+        Navigator.of(context).pushReplacementNamed('/login');
+      }
+    });
+
     return Scaffold(
       body: Stack(
         children: [

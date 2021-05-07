@@ -1,13 +1,13 @@
-import 'package:easyPass/regitster.dart';
-import 'package:easyPass/user/accounts.dart';
-import 'package:easyPass/user/home.dart';
-import 'package:easyPass/user/info.dart';
-import 'package:easyPass/user/settings.dart';
+import 'package:easy_pass/regitster.dart';
+import 'package:easy_pass/user/accounts.dart';
+import 'package:easy_pass/user/home.dart';
+import 'package:easy_pass/user/info.dart';
+import 'package:easy_pass/user/settings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:easyPass/welcome.dart';
-import 'package:easyPass/test.dart';
-import 'package:easyPass/login.dart';
+import 'package:easy_pass/welcome.dart';
+import 'package:easy_pass/test.dart';
+import 'package:easy_pass/login.dart';
 
 typedef PathWidgetBuilder = Widget Function(BuildContext, List<String>);
 

@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:easyPass/utils/app_theme.dart';
+import 'package:easy_pass/utils/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';

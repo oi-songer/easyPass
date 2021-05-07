@@ -1,4 +1,4 @@
-import 'package:easyPass/utils/components.dart';
+import 'package:easy_pass/utils/components.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';

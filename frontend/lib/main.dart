@@ -1,6 +1,5 @@
-import 'package:easyPass/routes.dart';
+import 'package:easy_pass/routes.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 void main() {
   runApp(EasyPassApp());

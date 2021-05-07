@@ -1,5 +1,5 @@
-import 'package:easyPass/utils/bottom_bar.dart';
-import 'package:easyPass/utils/components.dart';
+import 'package:easy_pass/utils/bottom_bar.dart';
+import 'package:easy_pass/utils/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 

@@ -1,4 +1,4 @@
-name: easyPass
+name: easy_pass
 description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
@@ -37,6 +37,7 @@ dependencies:
   # http: ^0.13.3
   dio: ^4.0.0   # http包
   fluttertoast: ^4.0.1    # toast功能
+  shared_preferences: ^2.0.5  # 状态存储
 
 dev_dependencies:
   flutter_test:

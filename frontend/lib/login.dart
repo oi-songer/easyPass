@@ -1,11 +1,14 @@
-import 'package:easyPass/model/user.dart';
-import 'package:easyPass/utils/app_theme.dart';
-import 'package:easyPass/utils/components.dart';
+import 'dart:convert';
+
+import 'package:easy_pass/model/user.dart';
+import 'package:easy_pass/utils/app_theme.dart';
+import 'package:easy_pass/utils/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage();
@@ -93,9 +96,11 @@ void _login(context, username, password) {
   );
 
   user.login().then(
-    (response) {
-      if (true) {
-        // if (response.data == 'success') {
+    (response) async {
+      if (response.data == 'success') {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user', jsonEncode(user));
+
         Navigator.of(context)
             .pushNamedAndRemoveUntil('/home', (route) => false);
       } else {
@@ -107,4 +112,11 @@ void _login(context, username, password) {
       }
     },
   );
+}
+
+Future<bool> checkLogin() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool ret = prefs.containsKey('user');
+
+  return ret;
 }

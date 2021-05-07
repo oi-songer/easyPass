@@ -1,4 +1,3 @@
-import 'package:easyPass/utils/bottom_bar.dart';
 import 'package:flutter/material.dart';
 
 class TestPage extends StatefulWidget {

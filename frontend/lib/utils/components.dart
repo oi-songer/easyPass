@@ -1,7 +1,6 @@
-import 'package:easyPass/utils/app_theme.dart';
+import 'package:easy_pass/utils/app_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:inkwell_splash/inkwell_splash.dart';
 
 const TitleTextStyle = const TextStyle(
   fontFamily: "Jiangcheng",

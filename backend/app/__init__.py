@@ -4,6 +4,7 @@ import click
 from flask import Flask
 from flask.cli import with_appcontext
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 
 db = SQLAlchemy()
 
@@ -13,7 +14,7 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
+        # DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
     )
 
     if test_config is None:
@@ -32,13 +33,17 @@ def create_app(test_config=None):
     # init database
     db.init_app(app)
     app.cli.add_command(init_db)
+    app.cli.add_command(drop_db)
 
-    from . import views
-    app.register_blueprint(views.bp)
+    CORS(app)
+
+    from .views import user
+    app.register_blueprint(user.bp)
 
     # a simple page that says hello
 
     return app
+
 
 @click.command('init-db')
 @with_appcontext

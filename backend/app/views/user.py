@@ -48,3 +48,20 @@ def login():
 
     resp = make_response("success")
     return resp
+
+@bp.route('/get_infos', methods=['POST'])
+def get_infos():
+    ret_dict = {
+        "infos": [
+            {
+                "id": "1",
+                "content": content,
+            },
+            {
+                "id": "1",
+                "content": content,
+            }
+        ]
+    }
+
+    return make_response(ret_dict)

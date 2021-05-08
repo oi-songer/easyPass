@@ -12,8 +12,15 @@ class User {
         'username': username,
       };
 
+  Future<BackendResponse> register() async {
+    return BackendClient.post('/user/register', {
+      'username': username,
+      'password': password,
+    });
+  }
+
   Future<BackendResponse> login() async {
-    return BackendClient.post({
+    return BackendClient.post('/user/login', {
       'username': username,
       'password': password,
     });

@@ -105,6 +105,45 @@ class MyButton extends StatelessWidget {
   }
 }
 
+class MyAlertButton extends StatelessWidget {
+  const MyAlertButton({this.child, this.onTap, this.radius = 45.0});
+
+  final Widget child;
+  final double radius;
+  final Function onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.red,
+        borderRadius: new BorderRadius.all(
+          Radius.circular(this.radius),
+        ),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+              color: Colors.grey.withOpacity(0.4),
+              offset: const Offset(0, 2),
+              blurRadius: 8.0),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: new BorderRadius.all(
+            Radius.circular(this.radius),
+          ),
+          onTap: this.onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: this.child,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class MyInfoCard extends StatelessWidget {
   const MyInfoCard({this.categoryName, this.content});
 

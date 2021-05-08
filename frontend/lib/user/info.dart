@@ -1,3 +1,5 @@
+import 'package:easy_pass/login.dart';
+import 'package:easy_pass/utils/app_theme.dart';
 import 'package:easy_pass/utils/bottom_bar.dart';
 import 'package:easy_pass/utils/components.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +17,24 @@ class _InfoPageState extends State<InfoPage> {
 
   @override
   Widget build(BuildContext context) {
+    checkLogin().then((valid) {
+      if (valid == false) {
+        Navigator.of(context).pushReplacementNamed('/');
+      }
+    });
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppTheme.mainGreen,
+        child: Icon(Icons.add),
+        onPressed: () {
+          Navigator.of(context).pushNamed('/editInfo/new');
+        },
+      ),
+      floatingActionButtonLocation: CustomFloatingActionButtonLocation(
+        FloatingActionButtonLocation.endFloat,
+        0,
+        -60,
+      ),
       body: Stack(
         children: [
           SizedBox(
@@ -83,5 +102,18 @@ class _InfoPageState extends State<InfoPage> {
         ],
       ),
     );
+  }
+}
+
+class CustomFloatingActionButtonLocation extends FloatingActionButtonLocation {
+  FloatingActionButtonLocation location;
+  double offsetX; // X方向的偏移量
+  double offsetY; // Y方向的偏移量
+  CustomFloatingActionButtonLocation(this.location, this.offsetX, this.offsetY);
+
+  @override
+  Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
+    Offset offset = location.getOffset(scaffoldGeometry);
+    return Offset(offset.dx + offsetX, offset.dy + offsetY);
   }
 }

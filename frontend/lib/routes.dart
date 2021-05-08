@@ -1,5 +1,6 @@
 import 'package:easy_pass/regitster.dart';
 import 'package:easy_pass/user/accounts.dart';
+import 'package:easy_pass/user/edit_info.dart';
 import 'package:easy_pass/user/home.dart';
 import 'package:easy_pass/user/info.dart';
 import 'package:easy_pass/user/settings.dart';
@@ -32,12 +33,14 @@ const homeRoute = '/home';
 const infoRoute = '/info';
 const accountsRoute = '/accounts';
 const settingsRoute = '/settings';
+const editInfoRoute = '/editInfo';
 
 const userRouteList = [
   homeRoute,
   infoRoute,
   accountsRoute,
   settingsRoute,
+  editInfoRoute,
 ];
 
 class Routeconfiguration {
@@ -50,6 +53,8 @@ class Routeconfiguration {
     Path(accountsRoute, (context, segments) => AccountsPage()),
     Path(infoRoute, (context, segments) => InfoPage()),
     Path(settingsRoute, (context, segments) => SettingsPage()),
+    Path(
+        editInfoRoute, (context, segments) => EditInfoPage(segments: segments)),
     Path(welcomeRoute, (context, segments) => WelcomePage()),
   ];
 

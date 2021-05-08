@@ -12,8 +12,9 @@ class BackendResponse {
 class BackendClient {
   static var client = Dio(BaseOptions(baseUrl: ApiUrl));
 
-  static Future<BackendResponse> post(Map<String, String> body) async {
-    var ret = client.post('/user/login', queryParameters: body).then(
+  static Future<BackendResponse> post(
+      String path, Map<String, String> body) async {
+    var ret = client.post(path, data: body).then(
       (response) {
         return BackendResponse(
           code: response.statusCode,
@@ -24,7 +25,7 @@ class BackendClient {
         print(e);
         return BackendResponse(
           code: 408,
-          data: "Can't connect to server",
+          data: "无法连接到服务器",
         );
       },
     );

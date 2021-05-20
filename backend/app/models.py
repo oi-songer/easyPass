@@ -2,18 +2,17 @@ from . import db
 
 
 class User(db.Model):
-    __talbe__name = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True)
     email = db.Column(db.String(30), unique=True)
     password = db.Column(db.String(32))
 
-    companies = db.relationship(
-        'UserCompany', backref='user', lazy='dynamic')
+    accounts = db.relationship(
+        'Account', backref='user', lazy='dynamic')
     infos = db.relationship('Info', backref='owner', lazy='dynamic')
 
-    def __init__(self, username, email, password):
+    def __init__(self, username, password, email = 'test@test.com'):
         self.username = username
         self.email = email
         self.password = password
@@ -28,7 +27,7 @@ class Company(db.Model):
     username = db.Column(db.String(20), unique=True)
     password = db.Column(db.String(32))
 
-    users = db.relationship('UserCompany', backref='company', lazy='dynamic')
+    accounts = db.relationship('Account', backref='company', lazy='dynamic')
     templates = db.relationship('Template', backref='owner', lazy='dynamic')
 
     def __init__(self, username, password):
@@ -47,6 +46,8 @@ class Template(db.Model):
 
     infos = db.relationship('Info', backref='template', lazy='dynamic')
 
+    company_id = db.Column(db.Integer, db.ForeignKey('company.id'))
+
 
 class Info(db.Model):
 
@@ -57,6 +58,9 @@ class Info(db.Model):
 
     content = db.Column(db.String(100))
 
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    template_id = db.Column(db.Integer, db.ForeignKey('template.id'))
+
 
 class InfoWrapper(db.Model):
 
@@ -64,17 +68,23 @@ class InfoWrapper(db.Model):
 
     # 权限类型
     permission = db.Column(db.Integer)
+    
+    info_id = db.Column(db.Integer, db.ForeignKey('info.id'))
+    user_company_rela_id = db.Column(db.Integer, db.ForeignKey('account.id'))
 
 
-class UserCompanyRela(db.Model):
+class Account(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
     login_histories = db.relationship(
-        'LoginHistory', backref='user_company_rela', lazy='dynamic')
+        'LoginHistory', backref='account', lazy='dynamic')
 
     info_list = db.relationship(
-        'InfoWrapper', backref='user_company_rela', lazy='dynamic')
+        'InfoWrapper', backref='account', lazy='dynamic')
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    company_id = db.Column(db.Integer, db.ForeignKey('company.id'))
 
     def __init__(self, user_id, Company_id):
         self.user_id = user_id,
@@ -89,3 +99,5 @@ class LoginHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ip = db.Column(db.String(30))
     device = db.Column(db.String(20))
+    
+    account_id = db.Column(db.Integer, db.ForeignKey('account.id'))

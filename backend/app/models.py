@@ -59,11 +59,13 @@ class Template(db.Model):
 class Info(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
+    create_time = db.Column(db.String(20))
+    modify_time = db.Column(db.String(20))
+    content = db.Column(db.String(100))
 
     wrappers = db.relationship(
         'InfoWrapper', backref='info_content', lazy='dynamic')
 
-    content = db.Column(db.String(100))
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     template_id = db.Column(db.Integer, db.ForeignKey('template.id'))

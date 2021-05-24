@@ -1,17 +1,30 @@
-from app import models
-from app import db
+from http import HTTPStatus
+from app import models, db
+from app.auth.jwt import jwt_auth
 from flask import Blueprint, request, make_response
+from flask.json import jsonify
 
 bp = Blueprint('info', __name__, url_prefix='/info')
 
 
-@bp.route('/get', methods=['POST', 'GET'])
+@bp.route('/get', methods=['POST'])
+@jwt_auth.login_required
 def get():
-    data = request.get_json()
-    username = data['username']
+    user : models.User = jwt_auth.current_user
 
-    user = models.User.query.filter_by(username=username).first()
-    infos = [ {"id": info.id, "content": info.content} for info in user.infos]
+    if (not isinstance(user, models.User)):
+        return jsonify({'code':401, 'message':'401 Unauthorized Access'})
+
+    data = request.get_json()
+    info_id = data.get('info_id', None)
+    keywords = data.get('keywords', None)
+
+    infos = user.infos
+
+    if (info_id != None):
+        # TODO find info by id
+        pass
+
 
     ret_json = {
         "infos": infos,
@@ -19,8 +32,10 @@ def get():
 
     return make_response(ret_json)
 
-@bp.route('/get', methods=['POST', 'GET'])
+@bp.route('/save', methods=['POST', 'GET'])
 def save():
     
-    data = request.get_json()
-    title = data['']
+    # data = request.get_json()
+    # title = data['']
+
+    return jsonify({'message': 'error'}), HTTPStatus.BAD_REQUEST

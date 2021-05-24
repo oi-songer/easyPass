@@ -1,3 +1,4 @@
+from app.status_code import MISSING_ARGUMENT
 from app.utils import encode_password, user_login_required
 from http import HTTPStatus
 from flask.json import jsonify
@@ -14,7 +15,7 @@ def register():
     password = data.get('password', None)
     
     if (username is None or password is None):
-        return jsonify({'message': 'missing argument'}), HTTPStatus.BAD_REQUEST
+        return MISSING_ARGUMENT
     
     user = models.User(username, encode_password(password))
 
@@ -77,34 +78,3 @@ def modify_password():
 
 
     return jsonify({'message': '更改密码成功'}), HTTPStatus.OK
-
-
-@bp.route('/get_infos', methods=['POST'])
-@jwt_auth.login_required
-def get_infos():
-    user : models.User = jwt_auth.current_user
-
-    data = request.get_json()
-    keywords = data['keywords']
-
-    infos = user.infos
-
-    if (keywords != ''):
-        # TODO search using keywords
-        pass
-
-
-    return jsonify({
-        'message': 'success',
-        'code': 0,
-        'infos': [
-            {
-                'id': info.id,
-                'content': info.content,
-                'title': info.template.title,
-                'create_time': info.create_time,
-                'modify_time': info.modify_time,
-            } for info in infos
-        ],
-    })
- 

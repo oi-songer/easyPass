@@ -1,5 +1,5 @@
 from . import db
-
+from sqlalchemy.sql import column
 
 class User(db.Model):
 
@@ -19,6 +19,13 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User %r>' % self.username
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email,
+        }
 
 
 class Company(db.Model):
@@ -86,7 +93,7 @@ class Account(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'))
 
-    def __init__(self, user_id, Company_id):
+    def __init__(self, user_id, company_id):
         self.user_id = user_id,
         self.company_id = company_id
 

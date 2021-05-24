@@ -1,6 +1,6 @@
 from flask.json import jsonify
 from itsdangerous import BadSignature, SignatureExpired, TimedJSONWebSignatureSerializer as Serializer
-from app.models import Company, User
+from app.models import Company, User, Admin
 from flask import current_app
 from flask_httpauth import HTTPTokenAuth
 from http import HTTPStatus
@@ -14,12 +14,18 @@ def generate_jwt_token_for_user(user : User):
     return token
 
 
-def generate_jwt_token_for_user(user : User):
+def generate_jwt_token_for_user(company : Company):
     s = Serializer(current_app.config['JWT_SECRET_KEY'], expires_in=current_app.config['JWT_EXPIRES_SECOND'])
-    token = s.dumps({'company_id': user.id}).decode('utf-8')
+    token = s.dumps({'company_id': company.id}).decode('utf-8')
 
     return token
 
+
+def generate_jwt_token_for_admin(admin : Admin):
+    s = Serializer(current_app.config['JWT_SECRET_KEY'], expires_in=current_app.config['JWT_EXPIRES_SECOND'])
+    token = s.dumps({'admin_id': admin.id}).decode('utf-8')
+
+    return token
 
 @jwt_auth.verify_token
 def verify_token(token):
@@ -44,6 +50,12 @@ def verify_token(token):
 
         if company is not None:
             return company
+    if 'admin_id' in data:
+        admin_id = data['admin_id']
+        admin = Admin.query.get(admin_id)
+
+        if admin is not None:
+            return admin
 
     return False
 

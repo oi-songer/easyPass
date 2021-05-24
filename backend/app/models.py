@@ -1,3 +1,6 @@
+import time
+
+from datetime import time
 from . import db
 from sqlalchemy.sql import column
 
@@ -45,15 +48,28 @@ class Company(db.Model):
         return '<Company %r>' % self.username
 
 
+class Admin(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), unique=True)
+    password = db.Column(db.String(32))
+
+
 class Template(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(40))
-    private = db.Column(db.Boolean)
+    description = db.Column(db.String(200))
+    approved = db.Column(db.Boolean)
 
     infos = db.relationship('Info', backref='template', lazy='dynamic')
 
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'))
+
+    def __init__(self, title, description, company_id):
+        self.title = title
+        self.description = description
+        self.company_id = company_id
+        self.approved = False
 
 
 class Info(db.Model):
@@ -69,6 +85,13 @@ class Info(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     template_id = db.Column(db.Integer, db.ForeignKey('template.id'))
+
+    def __init__(self, content, tempalte_id, user_id):
+        self.content = content
+        self.template_id = tempalte_id
+        self.user_id = user_id
+        self.create_time = time.asctime( time.localtime( time.time()))
+        self.modify_time = time.asctime( time.localtime( time.time()))
 
 
 class InfoWrapper(db.Model):

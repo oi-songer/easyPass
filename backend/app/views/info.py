@@ -35,7 +35,25 @@ def create():
 @bp.route('/drop', methods=['POST'])
 @user_login_required
 def drop():
-    pass
+    user = jwt_auth.current_user
+
+    data = request.get_sjon()
+    info_id = data.get('info_id', None)
+
+    if (info_id is None):
+        return MISSING_ARGUMENT
+
+    info = models.Info.query.get(info_id)
+    if (info is None):
+        return jsonify({'message': '该信息已不存在'}), HTTPStatus.BAD_REQUEST
+    
+    if (info.user_id != user.id):
+        return FORBIDDEN
+
+    db.session.delete(info);
+    db.session.commit()
+
+    return jsonify({'message': '删除信息成功'}), HTTPStatus.NO_CONTENT
 
 
 @bp.route('/get', methods=['GET'])

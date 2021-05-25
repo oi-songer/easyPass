@@ -1,7 +1,9 @@
-from flask.json import jsonify
+from functools import wraps
 from itsdangerous import BadSignature, SignatureExpired, TimedJSONWebSignatureSerializer as Serializer
 from app.models import Company, User, Admin
+from app.status_code import FORBIDDEN
 from flask import current_app
+from flask.json import jsonify
 from flask_httpauth import HTTPTokenAuth
 from http import HTTPStatus
 
@@ -14,7 +16,7 @@ def generate_jwt_token_for_user(user : User):
     return token
 
 
-def generate_jwt_token_for_user(company : Company):
+def generate_jwt_token_for_company(company : Company):
     s = Serializer(current_app.config['JWT_SECRET_KEY'], expires_in=current_app.config['JWT_EXPIRES_SECOND'])
     token = s.dumps({'company_id': company.id}).decode('utf-8')
 
@@ -63,3 +65,40 @@ def verify_token(token):
 @jwt_auth.error_handler
 def error_handler():
     return jsonify({'message':'401 Unauthorized Access'}), HTTPStatus.UNAUTHORIZED
+
+def user_login_required(f):
+    @wraps(f)
+    def wrapper():
+        user = jwt_auth.current_user()
+
+        if (isinstance(user, User)):
+            return f()
+
+        return FORBIDDEN
+    
+    return wrapper
+
+
+def company_login_required(f):
+    @wraps(f)
+    def wrapper():
+        user = jwt_auth.current_user()
+
+        if (isinstance(user, Company)):
+            return f()
+
+        return FORBIDDEN
+    
+    return wrapper
+
+def admin_login_required(f):
+    @wraps(f)
+    def wrapper():
+        user = jwt_auth.current_user()
+
+        if (isinstance(user, Admin)):
+            return f()
+
+        return FORBIDDEN
+    
+    return wrapper

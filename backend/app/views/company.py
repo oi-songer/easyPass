@@ -1,7 +1,9 @@
 
-from app.auth.jwt import generate_jwt_token_for_admin, generate_jwt_token_for_company
+from flask import json
+from app.auth.oauth import generate_oauth_key
+from app.auth.jwt import jwt_auth, generate_jwt_token_for_company
 from http import HTTPStatus
-from app import models
+from app import models, db
 from app.utils import company_login_required, encode_password
 from flask import Blueprint, request
 from flask.json import jsonify
@@ -11,6 +13,11 @@ bp = Blueprint('company', __name__, url_prefix='/company')
 @bp.route('/register', methods=['POST'])
 def register():
     # 邮箱验证？管理员审核？
+    data = request.get_json()
+    username = data['username']
+    password = data['password']
+
+    # TODO
     pass
 
 @bp.route('/login', methods=['POST'])
@@ -35,8 +42,14 @@ def login():
     return resp, HTTPStatus.OK
 
 
-@bp.route('/generate_oauth_key', methods=['GET'])
+@bp.route('/regenerate_oauth_key', methods=['POST'])
 @company_login_required
-def generate_oauth_key():
-    # TODO
-    pass
+def regenerate_oauth_key():
+    company = jwt_auth.current_user
+
+    ak, sk = generate_oauth_key(company)
+    company.client_id = ak
+    company.secret_key = sk
+    db.session.commit()
+
+    return jsonify(message = '生成成功'), HTTPStatus.OK

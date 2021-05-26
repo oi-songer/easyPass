@@ -15,7 +15,7 @@ bp = Blueprint('template', __name__, url_prefix='/template')
 @bp.route('/create', methods=['POST'])
 @company_login_required
 def create():
-    company = jwt_auth.current_user
+    company : models.Company = jwt_auth.current_user()
 
     data = request.get_json()
     title = data.get('title', None)

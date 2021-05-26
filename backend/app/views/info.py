@@ -12,7 +12,7 @@ bp = Blueprint('info', __name__, url_prefix='/info')
 @bp.route('/create', methods=['POST'])
 @user_login_required
 def create():
-    user = jwt_auth.current_user
+    user = jwt_auth.current_user()
 
     data = request.get_json()
     content = data.get('content', None)
@@ -34,7 +34,7 @@ def create():
 @bp.route('/drop', methods=['POST'])
 @user_login_required
 def drop():
-    user = jwt_auth.current_user
+    user = jwt_auth.current_user()
 
     data = request.get_sjon()
     info_id = data.get('info_id', None)
@@ -58,7 +58,7 @@ def drop():
 @bp.route('/get', methods=['GET'])
 @user_login_required
 def get():
-    user : models.User = jwt_auth.current_user
+    user : models.User = jwt_auth.current_user()
 
     # TODO 获取get的参数
     data = request.get_json()
@@ -94,7 +94,7 @@ def get():
 @bp.route('/modify', methods=['POST'])
 @user_login_required
 def modify():
-    user = jwt_auth.current_user
+    user = jwt_auth.current_user()
 
     data = request.get_json()
     info_id = data.get('id', None)

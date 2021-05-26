@@ -8,6 +8,7 @@ from flask_cors import CORS
 
 db = SQLAlchemy()
 
+# TIP
 # 该函数是一个应用工厂函数
 def create_app(test_config=None):
     # create and configure the app
@@ -38,20 +39,20 @@ def create_app(test_config=None):
 
     return app
 
-
+# TIP
 @click.command('init-db')
 @with_appcontext
 def init_db():
     # 这里要先import models，才能根据models结构来create数据库表
-    from . import models
+    from app import models
     db.create_all()
     
-    click.echo('Initialized the database.')
+    click.echo('Initialized the database.\n')
 
 @click.command('drop-db')
 @with_appcontext
 def drop_db():
-    from . import models
+    from app import models
     db.drop_all()
     
-    click.echo('Dropped the database.')
+    click.echo('Dropped the database.\n')

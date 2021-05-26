@@ -1,9 +1,9 @@
 from app.status_code import MISSING_ARGUMENT
-from app.utils import encode_password, user_login_required
+from app.utils import encode_password
 from http import HTTPStatus
 from flask.json import jsonify
 from app import db, models
-from app.auth.jwt import generate_jwt_token_for_user, jwt_auth
+from app.auth.jwt import generate_jwt_token_for_user, jwt_auth, user_login_required
 from flask import Blueprint, request
 
 bp = Blueprint('user', __name__, url_prefix='/user')
@@ -15,7 +15,7 @@ def register():
     password = data.get('password', None)
     
     if (username is None or password is None):
-        return MISSING_ARGUMENT
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
     
     user = models.User(username, encode_password(password))
 
@@ -55,7 +55,11 @@ def login():
 @user_login_required
 def modify_user_info():
     user = jwt_auth.current_user()
+    
+    data = request.get_json()
+    username = data.get('username', None)
     # TODO
+
     return jsonify(user.to_dict())
 
 
@@ -69,7 +73,6 @@ def modify_password():
     old_password = data['old_password']
     new_password = data['new_password']
 
-    # TODO
     if (encode_password(old_password) == user.password):
         user.password = encode_password(new_password)
         db.session.commit()
@@ -78,3 +81,4 @@ def modify_password():
 
 
     return jsonify({'message': '更改密码成功'}), HTTPStatus.OK
+ 

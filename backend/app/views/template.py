@@ -22,7 +22,7 @@ def create():
     description = data.get('description', None)
 
     if (title is None or description is None):
-        return MISSING_ARGUMENT
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
 
     template = models.Template(title, description, company.id)
     db.session.add(template)
@@ -62,7 +62,7 @@ def approve():
     approve = data.get('approve', None)
 
     if (template_id is None or approve is None):
-        return MISSING_ARGUMENT
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
 
     template = models.Template.query.get(template_id)
     template.approved = approve

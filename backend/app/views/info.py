@@ -1,9 +1,8 @@
 from flask.signals import template_rendered
 from app.status_code import FORBIDDEN, MISSING_ARGUMENT
-from app.utils import user_login_required
 from http import HTTPStatus
 from app import models, db
-from app.auth.jwt import jwt_auth
+from app.auth.jwt import jwt_auth, user_login_required
 from flask import Blueprint, request
 from flask.json import jsonify
 
@@ -20,10 +19,10 @@ def create():
     template_id = data.get('template_id', None)
 
     if (content is None or template_id is None):
-        return MISSING_ARGUMENT
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
 
     if (models.Template.query.get(template_id) is None):
-        return jsonify({'message': '对应的模板不存在'}), HTTPStatus.BAD_GATEWAY
+        return jsonify(message = '对应的模板不存在'), HTTPStatus.BAD_GATEWAY
 
     info = models.Info(content, template_id, user.id)
     db.session.add(info)
@@ -41,14 +40,14 @@ def drop():
     info_id = data.get('info_id', None)
 
     if (info_id is None):
-        return MISSING_ARGUMENT
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
 
     info = models.Info.query.get(info_id)
     if (info is None):
-        return jsonify({'message': '该信息已不存在'}), HTTPStatus.BAD_REQUEST
+        return jsonify(message = '该信息已不存在'), HTTPStatus.BAD_REQUEST
     
     if (info.user_id != user.id):
-        return FORBIDDEN
+        return jsonify(message = FORBIDDEN), HTTPStatus.FORBIDDEN
 
     db.session.delete(info);
     db.session.commit()
@@ -102,18 +101,18 @@ def modify():
     content = data.get('content', None)
 
     if (id is None or content is None):
-        return MISSING_ARGUMENT
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
 
     info = models.Info.get(info_id)
 
     # check owner
     if (info.user_id != user.id):
-        return FORBIDDEN
+        return jsonify(message = FORBIDDEN), HTTPStatus.FORBIDDEN
     
     if (info is None):
-        return jsonify({'message': 'info does not exist'}), HTTPStatus.BAD_REQUEST
+        return jsonify(message = 'info does not exist'), HTTPStatus.BAD_REQUEST
 
     info.content = content
     db.session.commit()
 
-    return jsonify({'message': '修改成功'}), HTTPStatus.OK
+    return jsonify(message = '修改成功'), HTTPStatus.OK

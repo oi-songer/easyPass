@@ -1,7 +1,7 @@
 from functools import wraps
 from itsdangerous import BadSignature, SignatureExpired, TimedJSONWebSignatureSerializer as Serializer
 from app.models import Company, User, Admin
-from app.status_code import FORBIDDEN
+from app.status_code import FORBIDDEN, UNAUTHORIZED
 from flask import current_app
 from flask.json import jsonify
 from flask_httpauth import HTTPTokenAuth
@@ -10,22 +10,20 @@ from http import HTTPStatus
 jwt_auth = HTTPTokenAuth()
 
 def generate_jwt_token_for_user(user : User):
-    s = Serializer(current_app.config['JWT_SECRET_KEY'], expires_in=current_app.config['JWT_EXPIRES_SECOND'])
-    token = s.dumps({'user_id': user.id}).decode('utf-8')
-
-    return token
+    return generate_jwt_token({'user_id': user.id})
 
 
 def generate_jwt_token_for_company(company : Company):
-    s = Serializer(current_app.config['JWT_SECRET_KEY'], expires_in=current_app.config['JWT_EXPIRES_SECOND'])
-    token = s.dumps({'company_id': company.id}).decode('utf-8')
-
-    return token
+    return generate_jwt_token({'company_id': company.id})
 
 
 def generate_jwt_token_for_admin(admin : Admin):
-    s = Serializer(current_app.config['JWT_SECRET_KEY'], expires_in=current_app.config['JWT_EXPIRES_SECOND'])
-    token = s.dumps({'admin_id': admin.id}).decode('utf-8')
+    return generate_jwt_token({'admin_id': admin.id})
+
+
+def generate_jwt_token(dic : dict, expires_in=current_app.config['JWT_EXPIRES_SECOND']):
+    s = Serializer(current_app.config['JWT_SECRET_KEY'], expires_in=expires_in)
+    token = s.dumps(dic).decode('utf-8')
 
     return token
 
@@ -64,7 +62,7 @@ def verify_token(token):
 
 @jwt_auth.error_handler
 def error_handler():
-    return jsonify({'message':'401 Unauthorized Access'}), HTTPStatus.UNAUTHORIZED
+    return jsonify(message = UNAUTHORIZED), HTTPStatus.UNAUTHORIZED
 
 def user_login_required(f):
     @wraps(f)
@@ -74,7 +72,7 @@ def user_login_required(f):
         if (isinstance(user, User)):
             return f()
 
-        return FORBIDDEN
+        return jsonify(message = FORBIDDEN), HTTPStatus.FORBIDDEN
     
     return wrapper
 
@@ -87,7 +85,7 @@ def company_login_required(f):
         if (isinstance(user, Company)):
             return f()
 
-        return FORBIDDEN
+        return jsonify(message = FORBIDDEN), HTTPStatus.FORBIDDEN
     
     return wrapper
 
@@ -99,6 +97,6 @@ def admin_login_required(f):
         if (isinstance(user, Admin)):
             return f()
 
-        return FORBIDDEN
+        return jsonify(message = FORBIDDEN), HTTPStatus.FORBIDDEN
     
     return wrapper

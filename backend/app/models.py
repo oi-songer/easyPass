@@ -1,8 +1,13 @@
+from re import template
 import time
 
 from datetime import time
+
+from werkzeug.utils import redirect
 from . import db
 from sqlalchemy.sql import column
+
+# TIP
 
 class Template(db.Model):
 
@@ -12,6 +17,7 @@ class Template(db.Model):
     approved = db.Column(db.Boolean)
 
     infos = db.relationship('Info', backref='template', lazy='dynamic')
+    requirements = db.relationship('Requirement', backref='template', lazy='dynamic')
 
     def __init__(self, title, description, company_id):
         self.title = title
@@ -67,9 +73,18 @@ class Requirement(db.Model):
 
     # 权限类型 (read, all)
     permission = db.Column(db.Integer)
+    optional = db.Column(db.Boolean)
     
     template_id = db.Column(db.Integer, db.ForeignKey('template.id'))
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'))
+
+    def to_dict(self):
+        return {
+            'template_id': self.template_id,
+            'template_title': self.template.title,
+            'permission': self.permission,
+            'optional': self.is_optional,
+        }
 
 
 class Company(db.Model):
@@ -77,6 +92,12 @@ class Company(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True)
     password = db.Column(db.String(32))
+
+    client_id = db.Colum(db.String(32))
+    secret_key = db.Column(db.String(32))
+
+    # split by ,
+    redirect_uris = db.Column(db.String(400))
 
     accounts = db.relationship('Account', backref='company', lazy='dynamic')
     requirements = db.relationship('Requirement', backref='company', lazy='dynamic')

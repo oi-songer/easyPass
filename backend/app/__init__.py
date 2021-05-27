@@ -1,3 +1,4 @@
+from app.utils import encode_password
 import os
 import click
 
@@ -46,6 +47,10 @@ def init_db():
     # 这里要先import models，才能根据models结构来create数据库表
     from app import models
     db.create_all()
+
+    admin = models.Admin('admin', encode_password('admin'))
+    db.session.add(admin)
+    db.session.commit()
     
     click.echo('Initialized the database.\n')
 

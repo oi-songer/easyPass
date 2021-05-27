@@ -1,3 +1,5 @@
+from app.views import info, user
+from app.auth.oauth import generate_oauth_key
 from re import template
 import time
 
@@ -14,16 +16,17 @@ class Template(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(40))
     description = db.Column(db.String(200))
-    approved = db.Column(db.Boolean)
+
+    # status: [approved, unapproved, waiting]
+    status = db.String(db.String(10))
 
     infos = db.relationship('Info', backref='template', lazy='dynamic')
     requirements = db.relationship('Requirement', backref='template', lazy='dynamic')
 
-    def __init__(self, title, description, company_id):
+    def __init__(self, title, description):
         self.title = title
         self.description = description
-        self.company_id = company_id
-        self.approved = False
+        self.status = 'waiting'
 
 
 class Info(db.Model):
@@ -36,6 +39,8 @@ class Info(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     template_id = db.Column(db.Integer, db.ForeignKey('template.id'))
 
+    info_auths = db.relationship('InfoAuth', backref = 'info', lazy='dynamic')
+
     def __init__(self, content, tempalte_id, user_id):
         self.content = content
         self.template_id = tempalte_id
@@ -44,17 +49,37 @@ class Info(db.Model):
         self.modify_time = time.asctime( time.localtime( time.time()))
 
 
-infos = db.Table('infos',
-    db.Column('account_id', db.Integer, db.ForeignKey('account.id')),
-    db.Column('info_id', db.Integer, db.ForeignKey('info.id')),
-)
+class InfoAuth(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+
+    account_id = db.Column(db.Integer, db.ForeignKey('account.id'))
+    info_id = db.Column(db.Integer, db.ForeignKey('info.id'))
+
+    # 权限类型 (read, all)
+    permission = db.Column(db.Integer)
+    optional = db.Column(db.Boolean)
+
+    def __init__(self, account_id, info_id, permission, optional):
+        self.account_id = account_id
+        self.info_id = info_id
+        self.permission = permission
+        self.optional = optional
+
+    def to_dict(self):
+        return {
+            'info_auth_id': self.id,
+            'permission': self.permission,
+            'optional': self.optional,
+        }
+
 
 class Account(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    infos = db.relationship('Info', secondary=infos,
-        backref = db.backref('accounts', lazy='dynamic'), lazy='dynamic')
+    # infos = db.relationship('Info', secondary=infos,
+    #     backref = db.backref('accounts', lazy='dynamic'), lazy='dynamic')
+    info_auths = db.relationship('InfoAuth', backref = 'account', lazy='dynamic')
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'))
@@ -78,8 +103,15 @@ class Requirement(db.Model):
     template_id = db.Column(db.Integer, db.ForeignKey('template.id'))
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'))
 
+    def __init__(self, company_id, template_id, permission, optional):
+        self.company_id = company_id
+        self.template_id = template_id
+        self.permission = permission
+        self.optional = optional
+
     def to_dict(self):
         return {
+            'requirement_id': self.id,
             'template_id': self.template_id,
             'template_title': self.template.title,
             'permission': self.permission,
@@ -92,6 +124,10 @@ class Company(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True)
     password = db.Column(db.String(32))
+    description = db.Column(db.String(400))
+
+    # status in [approved, unapproved, waiting]
+    status = db.Column(db.String(10))
 
     client_id = db.Colum(db.String(32))
     secret_key = db.Column(db.String(32))
@@ -102,12 +138,22 @@ class Company(db.Model):
     accounts = db.relationship('Account', backref='company', lazy='dynamic')
     requirements = db.relationship('Requirement', backref='company', lazy='dynamic')
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, description):
         self.username = username
         self.password = password
+        self.description = description
+        self.status = 'waiting'
+
 
     def __repr__(self):
         return '<Company %r>' % self.username
+
+    def to_dict(self):
+        return {
+            'company_id': self.id,
+            'username': self.username,
+            'description': self.description,
+        }
 
 
 class User(db.Model):
@@ -141,3 +187,7 @@ class Admin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True)
     password = db.Column(db.String(32))
+
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password

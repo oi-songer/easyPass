@@ -56,6 +56,14 @@ def verify_token(token):
 
         if admin is not None:
             return admin
+    if 'oauth_access_token' in data:
+        content = data
+
+        return content
+    if 'refresh_token' in data:
+        content = data
+
+        return content
 
     return False
 
@@ -95,6 +103,30 @@ def admin_login_required(f):
         user = jwt_auth.current_user()
 
         if (isinstance(user, Admin)):
+            return f()
+
+        return jsonify(message = FORBIDDEN), HTTPStatus.FORBIDDEN
+    
+    return wrapper
+
+def refresh_token_required(f):
+    @wraps(f)
+    def wrapper():
+        data = jwt_auth.current_user()
+
+        if 'refresh_token' in data:
+            return f()
+
+        return jsonify(message = FORBIDDEN), HTTPStatus.FORBIDDEN
+    
+    return wrapper
+
+def auth_access_token_required(f):
+    @wraps(f)
+    def wrapper():
+        data = jwt_auth.current_user()
+
+        if 'oauth_access_token' in data:
             return f()
 
         return jsonify(message = FORBIDDEN), HTTPStatus.FORBIDDEN

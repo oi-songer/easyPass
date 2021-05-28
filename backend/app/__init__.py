@@ -2,7 +2,8 @@ from app.utils import encode_password
 import os
 import click
 
-from flask import Flask
+from redis import StrictRedis
+from flask import Flask, g
 from flask.cli import with_appcontext
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -29,6 +30,10 @@ def create_app(test_config=None):
     db.init_app(app)
     app.cli.add_command(init_db)
     app.cli.add_command(drop_db)
+
+    # connect redis server
+    g.redis = StrictRedis(host='121.5.160.8', port=6379, db=0, password='redis_pass')
+    g.redis.setex()
 
     CORS(app)
 

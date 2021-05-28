@@ -10,7 +10,7 @@ from app.utils import encode_password, encode_with_nonce_and_timestamp
 from http import HTTPStatus
 from flask.json import jsonify
 from app import db, models
-from app.auth.jwt import auth_access_token_required, generate_jwt_token, generate_jwt_token_for_user, jwt_auth, user_login_required
+from app.auth.jwt import auth_access_token_required, generate_jwt_token, generate_jwt_token_for_user, jwt_auth, refresh_token_required, user_login_required
 from flask import Blueprint, request, g
 
 bp = Blueprint('oauth', __name__, url_prefix='/oauth')
@@ -130,3 +130,38 @@ def modify_info():
     db.session.commit()
 
     return jsonify(message='succeed'), HTTPStatus.OK
+
+@bp.route('/refresh_token', methods=['POST'])
+@refresh_token_required
+def refresh_token():
+    dic = jwt_auth.current_user()
+
+    token_dic = dic.get('refresh_token', None)
+    if (token_dic is None):
+        return jsonify(message=FORBIDDEN), HTTPStatus.FORBIDDEN
+
+    timeout : int
+    if ('access_token' in token_dic):
+        timeout = current_app.config['ACCESS_EXPIRES_SECOND']
+    else:
+        timeout = current_app.config['JWT_EXPIRES_SECOND']
+    
+    access_token = generate_jwt_token({
+        'access_token':{
+            **token_dic
+        },
+    }, timeout)
+
+    refresh_token = generate_jwt_token({
+        'refresh_token':{
+            'access_token':{
+                **token_dic
+            },
+        },
+    }, timeout * 2)
+    
+    return jsonify(
+        message='succeed',
+        access_token=access_token,
+        refresh_token=refresh_token,
+    ), HTTPStatus.OK

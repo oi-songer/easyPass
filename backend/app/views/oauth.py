@@ -39,7 +39,7 @@ def get_info():
     if (template_id is None):
         return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
 
-    company : models.Company = models.Company.query.filter(client_id = client_id).first()
+    company : models.Company = models.Company.query.filter_by(client_id = client_id).first()
 
     if (company is None):
         return jsonify(message=FORBIDDEN), HTTPStatus.FORBIDDEN
@@ -62,8 +62,8 @@ def get_info():
     if (sign != my_sign):
         return jsonify(message=FORBIDDEN), HTTPStatus.FORBIDDEN
 
-    info_auth : models.InfoAuth = models.InfoAuth.join(models.Account, models.InfoAuth.account_id == models.Account.id)\
-        .query.filter(user_id=user_id, company_id=company.id).first()
+    info_auth : models.InfoAuth = models.InfoAuth.query.join(models.Account, models.InfoAuth.account_id == models.Account.id)\
+        .query.filter_by(user_id=user_id, company_id=company.id).first()
     if (info_auth == None):
         return jsonify(message=FORBIDDEN), HTTPStatus.FORBIDDEN
 
@@ -96,7 +96,7 @@ def modify_info():
     if (template_id is None):
         return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
 
-    company : models.Company = models.Company.query.filter(client_id = client_id).first()
+    company : models.Company = models.Company.query.filter_by(client_id = client_id).first()
 
     if (company is None):
         return jsonify(message=FORBIDDEN), HTTPStatus.FORBIDDEN
@@ -119,8 +119,8 @@ def modify_info():
     if (sign != my_sign):
         return jsonify(message=FORBIDDEN), HTTPStatus.FORBIDDEN
 
-    info_auth : models.InfoAuth = models.InfoAuth.join(models.Account, models.InfoAuth.account_id == models.Account.id)\
-        .query.filter(user_id=user_id, company_id=company.id).first()
+    info_auth : models.InfoAuth = models.InfoAuth.query.join(models.Account, models.InfoAuth.account_id == models.Account.id)\
+        .query.filter_by(user_id=user_id, company_id=company.id).first()
     if (info_auth == None or info_auth.permission != 'all'):
         return jsonify(message=FORBIDDEN), HTTPStatus.FORBIDDEN
     

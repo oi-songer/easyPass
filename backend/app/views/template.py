@@ -25,24 +25,17 @@ def create():
     if (title is None or description is None):
         return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
 
-    if (models.Template.query.filter(title=title, status='approved').first() != None):
+    if (models.Template.query.filter_by(title=title, status='approved').first() != None):
         return jsonify(message='该标题已被注册'), HTTPStatus.BAD_REQUEST
 
     template = models.Template(title, description, company.id)
     db.session.add(template)
     db.session.commit()
 
-    if (models.Template.query.filter(title=title).first() is None):
+    if (models.Template.query.filter_by(title=title).first() is None):
         return jsonify({'message': '申请失败'}), HTTPStatus.BAD_REQUEST
 
     return jsonify({'message': '申请成功，请等待审批'}), HTTPStatus.CREATED
-
-
-@bp.route('/modify', methods=['POST'])
-@company_login_required
-def modify():
-    # TODO
-    pass
 
 
 @bp.route('/get', methods=['GET'])
@@ -50,15 +43,45 @@ def modify():
 def get():
     data = request.args
     status = data.get('status', None)
+    account_id = data.get('account_id', None)
 
     if (status is None):
         return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
     if (status not in ['approved', 'unapproved', 'all']):
         return jsonify(message='status参数不合法'), HTTPStatus.BAD_REQUEST
 
+    if (account_id != None):
+        account : models.Account = models.Account.get(account_id)
+
+        # 找到该企业用户要求的所有Template
+        templates = models.Template.query\
+            .join(models.Requirement, models.Requirement.template_id == models.Template.id)\
+            .filter(models.Requirement.company_id == account.company_id)
+
+        info_auths : typing.List[models.InfoAuth] = account.info_auths
+
+        info_list = []
+        for template in templates:
+            info_list.append(
+                {
+                    'info_id': template.id,
+                    'title': template.title,
+                    'created': True,
+                }
+            )
+        info_list = [
+            {
+                'info_id': info.id,
+                'title': info.template.title,
+                'modify_time': info.modify_time,
+                'created': True,
+            } for index, info in enumerate(infos)
+        ]
+        # TODO
+
     templates : typing.List[models.Template]
     if (status != 'all'):
-        templates = models.Template.query.filter(status=status).all()
+        templates = models.Template.query.filter_by(status=status).all()
     else:
         templates = models.Template.query.all()
 

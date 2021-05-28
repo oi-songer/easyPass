@@ -25,14 +25,14 @@ def create():
     if (permission not in ['read', 'all']):
         return jsonify(message='请求的权限不合法'), HTTPStatus.BAD_REQUEST
 
-    if (models.Requirement.query.filter(company_id = company.id, template_id = template_id).first() != None):
+    if (models.Requirement.query.filter_by(company_id = company.id, template_id = template_id).first() != None):
         return jsonify(message='您已提出过该需求'), HTTPStatus.BAD_REQUEST
 
     requirement = models.Requirement(company.id, template_id, permission, optional)
     db.session.add(requirement)
     db.session.commit()
 
-    if (models.Requirement.query.filter(company_id = company.id, template_id = template_id).first() is None):
+    if (models.Requirement.query.filter_by(company_id = company.id, template_id = template_id).first() is None):
         return jsonify({'message': '创建失败'}), HTTPStatus.BAD_REQUEST
 
     return jsonify({'message': '创建成功'}), HTTPStatus.OK
@@ -46,14 +46,14 @@ def remove():
     data = request.get_json()
     template_id = data.get('template_id', None)
 
-    requirement = models.Requirement.query.filter(company_id = company.id, template_id = template_id).first()
+    requirement = models.Requirement.query.filter_by(company_id = company.id, template_id = template_id).first()
     if (requirement is None):
         return jsonify(message='该需求已经不存在'), HTTPStatus.BAD_REQUEST
 
     db.session.delete(requirement)
     db.session.commit()
 
-    requirement = models.Requirement.query.filter(company_id = company.id, template_id = template_id).first()
+    requirement = models.Requirement.query.filter_by(company_id = company.id, template_id = template_id).first()
     if (requirement != None):
         return jsonify(message='删除失败'), HTTPStatus.INTERNAL_SERVER_ERROR
 
@@ -76,7 +76,7 @@ def edit():
     if (permission not in ['read', 'all']):
         return jsonify(message='请求的权限不合法'), HTTPStatus.BAD_REQUEST\
     
-    requirement = models.Requirement.query.filter(company_id = company.id, template_id = template_id).first()
+    requirement = models.Requirement.query.filter_by(company_id = company.id, template_id = template_id).first()
     requirement.permission = permission
     requirement.optional = optional
     db.session.commit()

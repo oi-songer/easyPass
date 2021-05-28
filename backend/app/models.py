@@ -22,6 +22,9 @@ class Template(db.Model):
 
     infos = db.relationship('Info', backref='template', lazy='dynamic')
     requirements = db.relationship('Requirement', backref='template', lazy='dynamic')
+    
+    info_auths = db.relationship('InfoAuth', backref = 'info', lazy='dynamic')
+
 
     def __init__(self, title, description):
         self.title = title
@@ -56,19 +59,31 @@ class Info(db.Model):
         self.create_time = time.asctime( time.localtime( time.time()))
         self.modify_time = time.asctime( time.localtime( time.time()))
 
+    def to_dict(self):
+        return {
+            'info_id': self.id,
+            'template_id': self.template.id,
+            'title': self.template.title,
+            'user_id': self.user_id,
+            'create_time': self.create_time,
+            'modify_time': self.modify_time,
+        }
+
 
 class InfoAuth(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     account_id = db.Column(db.Integer, db.ForeignKey('account.id'))
     info_id = db.Column(db.Integer, db.ForeignKey('info.id'))
+    template_id = db.Column(db.Interger, db.ForeignKey('template.id'))
 
     # 权限类型 (read, all)
     permission = db.Column(db.Integer)
 
-    def __init__(self, account_id, info_id, permission, optional):
+    def __init__(self, account_id, info_id, template_id, permission, optional):
         self.account_id = account_id
         self.info_id = info_id
+        self.template_id = template.id
         self.permission = permission
         self.optional = optional
 

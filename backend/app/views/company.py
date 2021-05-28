@@ -22,7 +22,7 @@ def register():
     if (username is None or password is None or description is None):
         return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
 
-    if (models.Company.query.filter(username=username, status='approved').first() != None):
+    if (models.Company.query.filter_by(username=username, status='approved').first() != None):
         return jsonify(message='企业用户名已被注册'), HTTPStatus.BAD_REQUEST
     
     company = models.Company(username, encode_password(password), description)
@@ -30,7 +30,7 @@ def register():
     db.session.add(company)
     db.session.commit()
 
-    if (models.Company.query.filter(username=username).first() is None):
+    if (models.Company.query.filter_by(username=username).first() is None):
         return jsonify({'message': '注册失败'}), HTTPStatus.BAD_REQUEST
 
     return jsonify({'message': '注册成功，请前往登录界面登录'}), HTTPStatus.CREATED
@@ -41,7 +41,7 @@ def login():
     username = data['username']
     password = data['password']
 
-    company = models.Company.query.filter(username=username).first()
+    company = models.Company.query.filter_by(username=username).first()
 
     if (company is None):
         resp = jsonify({"message":"企业用户不存在"}), HTTPStatus.BAD_REQUEST
@@ -148,7 +148,7 @@ def get():
 
     companies : typing.List[models.Company]
     if (status != 'all'):
-        companies = models.Company.query.filter(status=status).all()
+        companies = models.Company.query.filter_by(status=status).all()
     else:
         companies = models.Company.query.all()
 

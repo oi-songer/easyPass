@@ -1,3 +1,5 @@
+from re import template
+import typing
 from flask.signals import template_rendered
 from app.status_code import FORBIDDEN, MISSING_ARGUMENT
 from http import HTTPStatus
@@ -5,6 +7,7 @@ from app import models, db
 from app.auth.jwt import jwt_auth, user_login_required
 from flask import Blueprint, request
 from flask.json import jsonify
+from sqlalchemy import _and, _or, _not
 
 bp = Blueprint('info', __name__, url_prefix='/info')
 
@@ -22,7 +25,10 @@ def create():
         return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
 
     if (models.Template.query.get(template_id) is None):
-        return jsonify(message = '对应的模板不存在'), HTTPStatus.BAD_GATEWAY
+        return jsonify(message='对应的模板不存在'), HTTPStatus.BAD_REQUEST
+
+    if (models.Info.query.filter_by(template_id=template_id).first() != None):
+        return jsonify(message='该条信息已存在'), HTTPStatus.BAD_REQUEST
 
     info = models.Info(content, template_id, user.id)
     db.session.add(info)
@@ -60,35 +66,60 @@ def drop():
 def get():
     user : models.User = jwt_auth.current_user()
 
-    # TODO 获取get的参数
-    data = request.get_json()
-    info_id = data.get('info_id', None)
+    data = request.args
     keywords = data.get('keywords', None)
+
+    keyword_list = ['%' + keyword.strip() + '%' for keyword in keywords.split()]
 
     infos = user.infos
 
-    if (info_id != None):
-        # TODO find info by id
-        pass
-
+    # if has keywords, filter keywords in title or content
     if (keywords != ''):
-        # TODO
-        pass
+        infos = infos.query.filter(
+            _and(
+                *[models.Info.content.like('%{0}%'.format(keyword))
+                for keyword in keyword_list]
+            ),
+            _and( 
+                *[models.Info.template.title.like('%{0}%'.format(keyword)) 
+                for keyword in keyword_list]
+            ),
+        )
+
+    info_list = [
+        {
+            'info_id': info.id,
+            'title': info.template.title,
+            'modify_time': info.modify_time,
+            'created': True,
+        } for info in infos.all()
+    ]
 
     return jsonify({
         'message': 'success',
         'code': 0,
-        'infos': [
-            {
-                'id': info.id,
-                'content': info.content,
-                'title': info.template.title,
-                'create_time': info.create_time,
-                'modify_time': info.modify_time,
-            } for info in infos
-        ],
+        'infos': info_list,
     }), HTTPStatus.OK
 
+
+
+@bp.route('/get_detail', methods=['GET'])
+@user_login_required
+def get_detail():
+    user : models.User = jwt_auth.current_user()
+
+    data = request.args
+    info_id = data.get('info_id', None)
+    
+    info : models.Info = models.Info.get(info_id)
+    
+    if (info.user.id != user.id):
+        return jsonify(message=FORBIDDEN), HTTPStatus.FORBIDDEN
+
+    return jsonify(
+        message='succeed',
+        info=info.to_dict(),
+    )
 
 
 @bp.route('/modify', methods=['POST'])

@@ -20,10 +20,10 @@ def register():
     if (username is None or password is None or email is None):
         return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
 
-    if (models.User.query.filter(username=username).first() != None):
+    if (models.User.query.filter_by(username=username).first() != None):
         return jsonify(message='用户名已被注册'), HTTPStatus.BAD_REQUEST
 
-    if (models.User.query.filter(email=email).first() != None):
+    if (models.User.query.filter_by(email=email).first() != None):
         return jsonify(message='邮箱已被注册'), HTTPStatus.BAD_REQUEST
     
     user = models.User(username, encode_password(password), email)
@@ -31,7 +31,7 @@ def register():
     db.session.add(user)
     db.session.commit()
 
-    if (models.User.query.filter(username=username).first() is None):
+    if (models.User.query.filter_by(username=username).first() is None):
         return jsonify({'message': '注册失败'}), HTTPStatus.BAD_REQUEST
 
     return jsonify({'message': '注册成功，请前往登录界面登录'}), HTTPStatus.CREATED
@@ -43,7 +43,7 @@ def login():
     username = data['username']
     password = data['password']
 
-    admin = models.Admin.query.filter(username=username).first()
+    admin = models.Admin.query.filter_by(username=username).first()
     
     if (admin is None):
         resp = jsonify({"message":"用户不存在"}), HTTPStatus.BAD_REQUEST

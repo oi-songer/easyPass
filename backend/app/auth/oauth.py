@@ -35,8 +35,8 @@ def authorize():
 
     if (request_type is None or client_id is None or state is None):
         return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
-    if (request_type != 'code'):
-        return jsonify(message='request_type should be code'), HTTPStatus.BAD_REQUEST
+    if (request_type != 'token'):
+        return jsonify(message='request_type should be token'), HTTPStatus.BAD_REQUEST
 
     s = Serializer(current_app.config['JWT_SECRET_KEY'], expires_in=10 * 3600)
     code = s.dumps({

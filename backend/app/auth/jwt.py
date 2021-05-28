@@ -72,6 +72,20 @@ def verify_token(token):
 def error_handler():
     return jsonify(message = UNAUTHORIZED), HTTPStatus.UNAUTHORIZED
 
+def require_login(typings):
+    def decorator(f):
+        @wraps
+        def wrapper():
+            user = jwt_auth.current_user()
+
+            if (type(user) in typings):
+                return f()
+            
+            return jsonify(message = FORBIDDEN), HTTPStatus.FORBIDDEN
+    
+        return wrapper
+    return decorator
+
 def user_login_required(f):
     @wraps(f)
     def wrapper():

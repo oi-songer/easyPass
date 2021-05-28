@@ -1,16 +1,16 @@
-from flask import json
-from flask.globals import current_app
-from app.status_code import FORBIDDEN, MISSING_ARGUMENT
+
+from app.status_code import MISSING_ARGUMENT
+from app.auth.jwt import jwt_auth, admin_login_required, generate_jwt_token_for_admin
 from app.utils import encode_password
 from http import HTTPStatus
 from flask.json import jsonify
 from app import db, models
-from app.auth.jwt import generate_jwt_token, generate_jwt_token_for_user, jwt_auth, user_login_required
 from flask import Blueprint, request
 
-bp = Blueprint('user', __name__, url_prefix='/user')
+bp = Blueprint('admin', __name__, url_prefix='/admin')
 
 @bp.route('/register', methods=['POST'])
+@admin_login_required
 def register():
     data = request.get_json()
     username = data.get('username', None)
@@ -43,49 +43,37 @@ def login():
     username = data['username']
     password = data['password']
 
-    user = models.User.query.filter(username=username).first()
+    admin = models.Admin.query.filter(username=username).first()
     
-    if (user is None):
+    if (admin is None):
         resp = jsonify({"message":"用户不存在"}), HTTPStatus.BAD_REQUEST
         return resp
 
-    if (encode_password(password) != user.password):
+    if (encode_password(password) != admin.password):
         resp = jsonify({"message":"密码错误"}), HTTPStatus.BAD_REQUEST
         return resp
 
-    token = generate_jwt_token_for_user(user)
+    token = generate_jwt_token_for_admin(admin)
 
     resp = jsonify({"message": "登陆成功", "token":token})
     return resp, HTTPStatus.OK
 
-@bp.route('/modify_user_info', methods=['POST'])
-@user_login_required
-def modify_user_info():
-    user = jwt_auth.current_user()
-    
-    data = request.get_json()
-    username = data.get('username', None)
-    # TODO
-
-    return jsonify(user.to_dict())
-
 
 @bp.route('/modify_password', methods=['POST'])
-@user_login_required
+@admin_login_required
 def modify_password():
-    user : models.User = jwt_auth.current_user()
+    admin : models.Admin = jwt_auth.current_user()
 
     data = request.get_json()
 
     old_password = data['old_password']
     new_password = data['new_password']
 
-    if (encode_password(old_password) == user.password):
-        user.password = encode_password(new_password)
+    if (encode_password(old_password) == admin.password):
+        admin.password = encode_password(new_password)
         db.session.commit()
     else:
         return jsonify({'message': '旧密码错误'}), HTTPStatus.BAD_REQUEST
 
 
     return jsonify({'message': '更改密码成功'}), HTTPStatus.OK
-

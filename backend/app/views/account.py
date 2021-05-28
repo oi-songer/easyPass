@@ -31,9 +31,11 @@ def third_party_login():
     }, current_app.config['ACCESS_EXPIRES_SECOND'])
 
     refresh_token = generate_jwt_token({
-        'access_token':{
-            'client_id': client_id,
-            'user_id': user_id,
+        'refresh_token':{
+            'access_token':{
+                'client_id': client_id,
+                'user_id': user_id,
+            },
         },
     }, current_app.config['ACCESS_EXPIRES_SECOND'] * 2)
 
@@ -181,9 +183,11 @@ def third_party_register():
     }, current_app.config['ACCESS_EXPIRES_SECOND'])
 
     refresh_token = generate_jwt_token({
-        'access_token':{
-            'client_id': client_id,
-            'user_id': user_id,
+        'refresh_token':{
+            'access_token':{
+                'client_id': client_id,
+                'user_id': user_id,
+            },
         },
     }, current_app.config['ACCESS_EXPIRES_SECOND'] * 2)
 

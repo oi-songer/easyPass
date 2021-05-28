@@ -28,6 +28,14 @@ class Template(db.Model):
         self.description = description
         self.status = 'waiting'
 
+    def to_dict(self):
+        return {
+            'template_id': self.id,
+            'title': self.title,
+            'description': self.description,
+            'status': self.status,
+        }
+
 
 class Info(db.Model):
 
@@ -57,7 +65,6 @@ class InfoAuth(db.Model):
 
     # 权限类型 (read, all)
     permission = db.Column(db.Integer)
-    optional = db.Column(db.Boolean)
 
     def __init__(self, account_id, info_id, permission, optional):
         self.account_id = account_id

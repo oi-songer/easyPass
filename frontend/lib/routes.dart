@@ -1,7 +1,7 @@
 import 'package:easy_pass/regitster.dart';
 import 'package:easy_pass/user/accounts.dart';
 import 'package:easy_pass/user/edit_info.dart';
-import 'package:easy_pass/user/home.dart';
+// import 'package:easy_pass/user/home.dart';
 import 'package:easy_pass/user/info.dart';
 import 'package:easy_pass/user/settings.dart';
 import 'package:flutter/foundation.dart';
@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:easy_pass/welcome.dart';
 import 'package:easy_pass/test.dart';
 import 'package:easy_pass/login.dart';
+
+import 'user/home/home.dart';
 
 typedef PathWidgetBuilder = Widget Function(BuildContext, List<String>);
 

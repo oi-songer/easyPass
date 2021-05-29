@@ -27,17 +27,28 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  # cupertino_icons: ^1.0.2
-  # adaptive_breakpoints: ^0.0.4
-  # flutter_gallery_assets: ^1.0.1
-  flutter_svg: ^0.21.0  # svg图片解析
-  font_awesome_flutter: ^8.8.1
-  inkwell_splash: ^0.0.1  # 带有波纹的按钮
-  barcode_scan: ^1.0.0    # 二维码识别
-  # http: ^0.13.3
+  
+  # 功能性插件
   dio: ^4.0.0   # http包
-  fluttertoast: ^4.0.1    # toast功能
   shared_preferences: ^2.0.5  # 状态存储
+  flutter_svg: ^0.21.0  # svg图片解析
+  local_auth: ^1.1.6  # 生物识别登录
+  barcode_scan: ^1.0.0    # 二维码识别
+
+  # UI相关插件
+  inkwell_splash: ^0.0.1  # 带有波纹的按钮
+  fluttertoast: ^4.0.1    # toast功能
+  font_awesome_flutter: ^9.0.0  # awesome图标
+  styled_widget: ^0.3.1 # 提供更易用的style写法
+  fsuper: ^2.0.2  # 和文本相关的UI组件
+  motion_tab_bar: ^0.1.5 # 底栏
+  neuomorphic_container: ^2.0.3 # 卡片Container
+  useful_widgets: ^1.2.0  # 功能性组件
+  filter_list: ^1.0.0 # 标签筛选功能
+  flutter_staggered_animations: ^1.0.0  # 加载动画
+  # groovin_widgets: ^2.0.0 # 功能性控件，如下拉框
+  toggle_switch: "^0.1.9" # switch按钮
+
 
 dev_dependencies:
   flutter_test:

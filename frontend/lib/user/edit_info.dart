@@ -74,8 +74,12 @@ class _EditInfoPageState extends State<EditInfoPage> {
                   children: [
                     DropdownButton(
                       items: items,
+                      value: selectedValue,
+                      underline: Container(),
                       onChanged: (value) {
-                        selectedValue = value;
+                        setState(() {
+                          selectedValue = value;
+                        });
                       },
                     ),
                     SizedBox(

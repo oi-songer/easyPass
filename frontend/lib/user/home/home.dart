@@ -1,3 +1,4 @@
+import 'package:easy_pass/user/edit_info.dart';
 import 'package:easy_pass/user/home/info_view.dart';
 import 'package:easy_pass/user/home/summary_view.dart';
 import 'package:easy_pass/utils/app_theme.dart';
@@ -8,20 +9,27 @@ import 'package:motion_tab_bar/MotionTabController.dart';
 import 'package:motion_tab_bar/motiontabbar.dart';
 
 class HomePage extends StatefulWidget {
-  final List<FloatingActionButton> floatButtonList = [
-    null,
-    FloatingActionButton(child: Icon(Icons.add)), // TODO
-    InfoViewFloatingButton(),
-    null,
-  ];
-
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
-  MotionTabController _tabController;
+  late MotionTabController _tabController;
+  FloatingActionButton? floatingButton;
+
+  void changeFloatingButton(BuildContext context) {
+    setState(() {
+      // set different params when in different page
+      floatingButton = FloatingActionButton(
+          backgroundColor: AppTheme.lightGreen,
+          child: Icon(Icons.add),
+          onPressed: () {
+            Navigator.of(context)
+                .pushNamed('/info', arguments: InfoArguments(isNew: true));
+          });
+    });
+  }
 
   @override
   void initState() {
@@ -56,7 +64,7 @@ class _HomePageState extends State<HomePage>
           ),
         ],
       ),
-      floatingActionButton: widget.floatButtonList[_tabController.index],
+      floatingActionButton: floatingButton,
       bottomNavigationBar: MotionTabBar(
         labels: ['首页', '账号', '信息', '设置'],
         initialSelectedTab: '首页',

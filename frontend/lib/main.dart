@@ -7,11 +7,11 @@ void main() {
 
 class EasyPassApp extends StatelessWidget {
   const EasyPassApp({
-    Key key,
-    this.initialRoute,
+    Key? key,
+    // this.initialRoute,
   }) : super(key: key);
 
-  final String initialRoute;
+  // final String initialRoute;
 
   // This widget is the root of your application.
   @override

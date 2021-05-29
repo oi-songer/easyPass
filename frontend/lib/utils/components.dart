@@ -22,14 +22,14 @@ const InfoCardLeftTextStyle = const TextStyle(
 
 class MyTextField extends StatelessWidget {
   const MyTextField({
-    this.hintText,
+    required this.hintText,
     this.restorationId,
-    this.controller,
+    required this.controller,
     this.obscurText = false,
   });
 
   final String hintText;
-  final String restorationId;
+  final String? restorationId;
   final bool obscurText;
   final TextEditingController controller;
 
@@ -67,7 +67,11 @@ class MyTextField extends StatelessWidget {
 }
 
 class MyButton extends StatelessWidget {
-  const MyButton({this.child, this.onTap, this.radius = 45.0});
+  const MyButton({
+    required this.child,
+    required this.onTap,
+    this.radius = 45.0,
+  });
 
   final Widget child;
   final double radius;
@@ -94,7 +98,7 @@ class MyButton extends StatelessWidget {
           borderRadius: new BorderRadius.all(
             Radius.circular(this.radius),
           ),
-          onTap: this.onTap,
+          onTap: this.onTap(),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: this.child,
@@ -106,7 +110,11 @@ class MyButton extends StatelessWidget {
 }
 
 class MyAlertButton extends StatelessWidget {
-  const MyAlertButton({this.child, this.onTap, this.radius = 45.0});
+  const MyAlertButton({
+    required this.child,
+    required this.onTap,
+    this.radius = 45.0,
+  });
 
   final Widget child;
   final double radius;
@@ -133,7 +141,7 @@ class MyAlertButton extends StatelessWidget {
           borderRadius: new BorderRadius.all(
             Radius.circular(this.radius),
           ),
-          onTap: this.onTap,
+          onTap: this.onTap(),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: this.child,
@@ -145,7 +153,7 @@ class MyAlertButton extends StatelessWidget {
 }
 
 class MyInfoCard extends StatelessWidget {
-  const MyInfoCard({this.categoryName, this.content});
+  const MyInfoCard({required this.categoryName, required this.content});
 
   final String categoryName;
   final String content;
@@ -263,8 +271,12 @@ class MyInfoCard extends StatelessWidget {
 }
 
 class MyAccountCard extends StatelessWidget {
-  const MyAccountCard(
-      {this.companyName, this.accountName, this.loginTime, this.infoCount});
+  const MyAccountCard({
+    required this.companyName,
+    required this.accountName,
+    required this.loginTime,
+    required this.infoCount,
+  });
 
   final String companyName;
   final String accountName;

@@ -12,7 +12,7 @@ import 'package:easy_pass/login.dart';
 
 import 'user/home/home.dart';
 
-typedef PathWidgetBuilder = Widget Function(BuildContext, List<String>);
+typedef PathWidgetBuilder = Widget Function(BuildContext);
 
 /// Path类中包含一个用于匹配路径的正则str，和一个用于构造实际页面内容的builder
 class Path {
@@ -48,57 +48,60 @@ const userRouteList = [
 class Routeconfiguration {
   /// 所有的需要进行正则匹配的path
   static List<Path> paths = [
-    Path(testRoute, (context, segments) => TestPage(segments: segments)),
-    Path(registerRoute, (context, segments) => RegisterPage()),
-    Path(loginRoute, (context, segments) => LoginPage()),
-    Path(homeRoute, (context, segments) => HomePage()),
-    Path(accountsRoute, (context, segments) => AccountsPage()),
-    // Path(infoRoute, (context, segments) => InfoPage()),
-    Path(settingsRoute, (context, segments) => SettingsPage()),
-    Path(
-        editInfoRoute, (context, segments) => EditInfoPage(segments: segments)),
-    Path(welcomeRoute, (context, segments) => WelcomePage()),
+    Path(testRoute, (context) => TestPage()),
+    Path(registerRoute, (context) => RegisterPage()),
+    Path(loginRoute, (context) => LoginPage()),
+    Path(homeRoute, (context) => HomePage()),
+    Path(accountsRoute, (context) => AccountsPage()),
+    // Path(infoRoute, (context) => InfoPage()),
+    Path(settingsRoute, (context) => SettingsPage()),
+    Path(editInfoRoute, (context) => EditInfoPage()),
+    Path(welcomeRoute, (context) => WelcomePage()),
   ];
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     for (final path in paths) {
       final regExpPattern = RegExp(r'^' + path.pattern);
-      if (regExpPattern.hasMatch(settings.name)) {
-        List<String> segmentsTmp;
-        if (settings.name.length > path.pattern.length) {
-          final lastFragment = settings.name.substring(path.pattern.length + 1);
+      if (regExpPattern.hasMatch(settings.name!)) {
+        List<String> segmentsTmp = [];
+        if (settings.name!.length > path.pattern.length) {
+          final lastFragment =
+              settings.name!.substring(path.pattern.length + 1);
           segmentsTmp = lastFragment.split('/');
         }
         final segments = segmentsTmp;
 
         if (kIsWeb) {
           return NoAnimationMaterialPageRoute<void>(
-            builder: (context) => path.builder(context, segments),
+            builder: (context) => path.builder(context),
             settings: settings,
           );
         }
         if (userRouteList.contains(settings.name)) {
           return NoAnimationMaterialPageRoute<void>(
-            builder: (context) => path.builder(context, segments),
+            builder: (context) => path.builder(context),
             settings: settings,
           );
         }
         return MaterialPageRoute<void>(
-          builder: (context) => path.builder(context, segments),
+          builder: (context) => path.builder(context),
           settings: settings,
         );
       }
     }
 
-    return null;
+    return MaterialPageRoute<void>(
+      builder: (context) => paths[paths.length].builder(context),
+      settings: settings,
+    );
   }
 }
 
 /// 专门用于在电脑上显示的MaterialPage，去掉了手机上的动画效果
 class NoAnimationMaterialPageRoute<T> extends MaterialPageRoute<T> {
   NoAnimationMaterialPageRoute({
-    @required WidgetBuilder builder,
-    RouteSettings settings,
+    required WidgetBuilder builder,
+    RouteSettings? settings,
   }) : super(builder: builder, settings: settings);
 
   @override

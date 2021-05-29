@@ -67,13 +67,13 @@ class _InfoPageState extends State<InfoPage> {
                     Padding(
                       padding: new EdgeInsets.only(left: 20, right: 20),
                       child: MyButton(
-                        child: SvgPicture.asset(
-                          'assets/images/icon/sousuo.svg',
-                          color: Colors.white,
-                          height: 30,
-                          width: 30,
-                        ),
-                      ),
+                          child: SvgPicture.asset(
+                            'assets/images/icon/sousuo.svg',
+                            color: Colors.white,
+                            height: 30,
+                            width: 30,
+                          ),
+                          onTap: () {}),
                     ),
                   ],
                 ),
@@ -85,9 +85,11 @@ class _InfoPageState extends State<InfoPage> {
                       children: [
                         MyInfoCard(
                           categoryName: "test1",
+                          content: "",
                         ),
                         MyInfoCard(
                           categoryName: "test2",
+                          content: "",
                         ),
                       ],
                     ),

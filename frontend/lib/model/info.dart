@@ -1,9 +1,9 @@
 import 'package:easy_pass/model/backend_client.dart';
 
 class Info {
-  Info({this.title, this.content});
+  Info({required this.title, required this.content});
 
-  int id;
+  late int id;
   String title;
   String content;
 

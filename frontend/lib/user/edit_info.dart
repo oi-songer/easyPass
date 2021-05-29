@@ -2,27 +2,23 @@ import 'package:easy_pass/utils/components.dart';
 import 'package:flutter/material.dart';
 
 class InfoArguments {
-  InfoArguments({this.isNew});
+  InfoArguments({this.isNew = true});
 
   bool isNew;
 }
 
 class EditInfoPage extends StatefulWidget {
-  EditInfoPage({this.segments});
-
-  final List<String> segments;
-
   @override
   _EditInfoPageState createState() => new _EditInfoPageState();
 }
 
 class _EditInfoPageState extends State<EditInfoPage> {
   final contentController = TextEditingController();
-  List<DropdownMenuItem> items;
-  bool isNew;
-  String infoId;
+  List<DropdownMenuItem>? items;
+  bool? isNew;
+  String? infoId;
   var selectedValue;
-  InfoArguments arguments;
+  InfoArguments? arguments;
 
   @override
   void initState() {

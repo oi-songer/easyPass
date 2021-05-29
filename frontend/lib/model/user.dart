@@ -1,10 +1,10 @@
 import 'package:easy_pass/model/backend_client.dart';
 
 class User {
-  User({this.username, this.password});
+  User({required this.username, this.password});
 
   String username;
-  String password;
+  String? password;
 
   User.fromJson(Map<String, dynamic> json) : username = json['username'];
 
@@ -15,14 +15,14 @@ class User {
   Future<BackendResponse> register() async {
     return BackendClient.post('/user/register', {
       'username': username,
-      'password': password,
+      'password': password!,
     });
   }
 
   Future<BackendResponse> login() async {
     return BackendClient.post('/user/login', {
       'username': username,
-      'password': password,
+      'password': password!,
     });
   }
 }

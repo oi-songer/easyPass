@@ -60,6 +60,7 @@ class _AccountsPageState extends State<AccountsPage> {
                           height: 30,
                           width: 30,
                         ),
+                        onTap: () {},
                       ),
                     ),
                   ],

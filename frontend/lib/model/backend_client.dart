@@ -6,7 +6,7 @@ class BackendResponse {
   int code;
   String data;
 
-  BackendResponse({this.code, this.data});
+  BackendResponse({required this.code, required this.data});
 }
 
 class BackendClient {
@@ -17,7 +17,7 @@ class BackendClient {
     var ret = client.post(path, data: body).then(
       (response) {
         return BackendResponse(
-          code: response.statusCode,
+          code: response.statusCode!,
           data: response.data.toString(),
         );
       },

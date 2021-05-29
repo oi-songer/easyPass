@@ -3,9 +3,7 @@ import 'package:motion_tab_bar/MotionTabController.dart';
 import 'package:motion_tab_bar/motiontabbar.dart';
 
 class TestPage extends StatefulWidget {
-  TestPage({Key key, this.segments}) : super(key: key);
-
-  final List<String> segments;
+  TestPage({Key? key}) : super(key: key);
 
   @override
   _TestPageState createState() => _TestPageState();
@@ -13,7 +11,7 @@ class TestPage extends StatefulWidget {
 
 class _TestPageState extends State<TestPage>
     with SingleTickerProviderStateMixin {
-  MotionTabController _tabController;
+  late MotionTabController _tabController;
 
   @override
   void initState() {
@@ -40,7 +38,7 @@ class _TestPageState extends State<TestPage>
         onTabItemSelected: (int value) {
           print(value);
           setState(() {
-            _tabController.index = value;
+            _tabController!.index = value;
           });
         },
         icons: [Icons.account_box, Icons.home, Icons.menu],

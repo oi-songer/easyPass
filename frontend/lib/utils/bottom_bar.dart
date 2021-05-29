@@ -8,7 +8,7 @@ import 'package:inkwell_splash/inkwell_splash.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 
 class BottomBar extends StatefulWidget {
-  const BottomBar({this.selectedPage});
+  const BottomBar({required this.selectedPage});
 
   final String selectedPage;
 

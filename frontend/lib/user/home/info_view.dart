@@ -11,7 +11,7 @@ import 'package:neuomorphic_container/neuomorphic_container.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class InfoView extends StatefulWidget {
-  const InfoView({Key key}) : super(key: key);
+  const InfoView({Key? key}) : super(key: key);
 
   @override
   _InfoViewState createState() => _InfoViewState();
@@ -113,6 +113,7 @@ class _InfoViewState extends State<InfoView> {
                       Icons.search,
                       color: Colors.white,
                     ),
+                    onTap: () {},
                   ),
                 ),
               ],
@@ -161,21 +162,8 @@ class _InfoViewState extends State<InfoView> {
   }
 }
 
-class InfoViewFloatingButton extends FloatingActionButton {
-  @override
-  Widget build(BuildContext context) {
-    return FloatingActionButton(
-        backgroundColor: AppTheme.lightGreen,
-        child: Icon(Icons.add),
-        onPressed: () {
-          Navigator.of(context)
-              .pushNamed('/info', arguments: InfoArguments(isNew: true));
-        });
-  }
-}
-
 class InfoCard extends StatelessWidget {
-  InfoCard({Key key, @required this.title}) : super(key: key);
+  InfoCard({Key? key, required this.title}) : super(key: key);
 
   final String title;
 

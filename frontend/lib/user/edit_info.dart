@@ -1,6 +1,12 @@
 import 'package:easy_pass/utils/components.dart';
 import 'package:flutter/material.dart';
 
+class InfoArguments {
+  InfoArguments({this.isNew});
+
+  bool isNew;
+}
+
 class EditInfoPage extends StatefulWidget {
   EditInfoPage({this.segments});
 
@@ -16,6 +22,7 @@ class _EditInfoPageState extends State<EditInfoPage> {
   bool isNew;
   String infoId;
   var selectedValue;
+  InfoArguments arguments;
 
   @override
   void initState() {
@@ -26,107 +33,17 @@ class _EditInfoPageState extends State<EditInfoPage> {
       DropdownMenuItem(child: Text("性别"), value: 2),
     ];
 
-    if (widget.segments.length > 0 && widget.segments[0] == 'new') {
-      isNew = true;
-    } else {
-      infoId = widget.segments[0];
-    }
+    // arguments = ModalRoute.of(context)!.settings.arguments as InfoArguments;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 20, left: 20, bottom: 20),
-          child: Text(
-            "编辑",
-            style: TitleTextStyle,
-          ),
-        ),
-        Padding(
-          padding: new EdgeInsets.only(left: 30, right: 30),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      "模板：",
-                      style: InfoCardLeftTextStyle,
-                    ),
-                    SizedBox(
-                      height: 40,
-                    ),
-                    Text(
-                      "内容：",
-                      style: InfoCardLeftTextStyle,
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                flex: 7,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    DropdownButton(
-                      items: items,
-                      value: selectedValue,
-                      underline: Container(),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedValue = value;
-                        });
-                      },
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    MyTextField(
-                      hintText: " ",
-                      restorationId: "content_text_field",
-                      controller: contentController,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        Divider(),
-        Divider(),
-        Row(
-          children: [
-            Expanded(
-              child: Padding(
-                padding: new EdgeInsets.all(20),
-                child: MyAlertButton(
-                  child: Text("取消"),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: new EdgeInsets.all(20),
-                child: MyButton(
-                  child: Text("保存"),
-                  onTap: () {
-                    // TODO save
-
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ),
-            ),
-          ],
-        )
-      ],
-    ));
+      body: Column(
+        children: [
+          Text("!!!"),
+        ],
+      ),
+    );
   }
 }

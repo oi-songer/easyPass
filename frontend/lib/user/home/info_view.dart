@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:easy_pass/user/edit_info.dart';
 import 'package:easy_pass/utils/app_theme.dart';
 import 'package:easy_pass/utils/components.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,6 +26,7 @@ class _InfoViewState extends State<InfoView> {
 
   @override
   void initState() {
+    super.initState();
     refreshTitle();
   }
 
@@ -166,7 +168,8 @@ class InfoViewFloatingButton extends FloatingActionButton {
         backgroundColor: AppTheme.lightGreen,
         child: Icon(Icons.add),
         onPressed: () {
-          //TODO
+          Navigator.of(context)
+              .pushNamed('/info', arguments: InfoArguments(isNew: true));
         });
   }
 }

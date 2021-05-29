@@ -32,14 +32,14 @@ const loginRoute = '/login';
 const registerRoute = '/register';
 
 const homeRoute = '/home';
-const infoRoute = '/info';
+// const infoRoute = '/info';
 const accountsRoute = '/accounts';
 const settingsRoute = '/settings';
-const editInfoRoute = '/editInfo';
+const editInfoRoute = '/info';
 
 const userRouteList = [
   homeRoute,
-  infoRoute,
+  // infoRoute,
   accountsRoute,
   settingsRoute,
   editInfoRoute,
@@ -53,7 +53,7 @@ class Routeconfiguration {
     Path(loginRoute, (context, segments) => LoginPage()),
     Path(homeRoute, (context, segments) => HomePage()),
     Path(accountsRoute, (context, segments) => AccountsPage()),
-    Path(infoRoute, (context, segments) => InfoPage()),
+    // Path(infoRoute, (context, segments) => InfoPage()),
     Path(settingsRoute, (context, segments) => SettingsPage()),
     Path(
         editInfoRoute, (context, segments) => EditInfoPage(segments: segments)),

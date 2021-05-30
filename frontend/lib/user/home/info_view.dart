@@ -19,10 +19,10 @@ class InfoView extends StatefulWidget {
 
 class _InfoViewState extends State<InfoView> {
   int filterIndex = 1;
-  List<String> titleList = [];
+  List<String> infoList = [];
   String filterMethod = "我的";
   final searchController = TextEditingController();
-  var random = Random(0);
+  var random = Random(0); // TODO remove this
 
   @override
   void initState() {
@@ -32,17 +32,17 @@ class _InfoViewState extends State<InfoView> {
 
   void refreshTitle() async {
     setState(() {
-      titleList.clear();
+      infoList.clear();
     });
 
     await Future.delayed(const Duration(microseconds: 1));
-    // get infos here
+    // get infos here (using filterMethod and serachController)
     // TIP using streamBuilder ?
 
     setState(() {
       for (int i = 0; i < 10; i++) {
         int rand = random.nextInt(200);
-        titleList.add('Title$rand $i');
+        infoList.add('Title$rand $i');
       }
     });
   }
@@ -122,12 +122,12 @@ class _InfoViewState extends State<InfoView> {
           Expanded(
             // child: AnimationLimiter(
             child: ListView.builder(
-              itemCount: titleList.length + 2,
+              itemCount: infoList.length + 2,
               itemBuilder: (BuildContext context, int index) {
-                if (index == titleList.length + 1) {
+                if (index == infoList.length + 1) {
                   return SizedBox(height: 50);
                 }
-                if (index == titleList.length) {
+                if (index == infoList.length) {
                   return Center(
                     child: MaterialButton(
                       child: Text("点击加载更多"),
@@ -147,7 +147,7 @@ class _InfoViewState extends State<InfoView> {
                       child: Padding(
                         padding: new EdgeInsets.only(
                             left: 30, right: 30, top: 10, bottom: 10),
-                        child: InfoCard(title: titleList[index]),
+                        child: InfoCard(title: infoList[index]),
                       ),
                     ),
                   ),

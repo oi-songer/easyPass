@@ -63,14 +63,6 @@ class Routeconfiguration {
     for (final path in paths) {
       final regExpPattern = RegExp(r'^' + path.pattern);
       if (regExpPattern.hasMatch(settings.name!)) {
-        List<String> segmentsTmp = [];
-        if (settings.name!.length > path.pattern.length) {
-          final lastFragment =
-              settings.name!.substring(path.pattern.length + 1);
-          segmentsTmp = lastFragment.split('/');
-        }
-        final segments = segmentsTmp;
-
         if (kIsWeb) {
           return NoAnimationMaterialPageRoute<void>(
             builder: (context) => path.builder(context),

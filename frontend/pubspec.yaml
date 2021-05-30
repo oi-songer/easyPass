@@ -33,11 +33,11 @@ dependencies:
   shared_preferences: ^2.0.5  # 状态存储
   flutter_svg: ^0.21.0  # svg图片解析
   local_auth: ^1.1.6  # 生物识别登录
-  barcode_scan: ^1.0.0    # 二维码识别
+  barcode_scan2: ^4.1.3    # 二维码识别
 
   # UI相关插件
-  inkwell_splash: ^0.0.1  # 带有波纹的按钮
-  fluttertoast: ^4.0.1    # toast功能
+  inkwell_splash: ^0.1.0  # 带有波纹的按钮
+  fluttertoast: ^8.0.7    # toast功能
   font_awesome_flutter: ^9.0.0  # awesome图标
   styled_widget: ^0.3.1 # 提供更易用的style写法
   fsuper: ^2.0.2  # 和文本相关的UI组件

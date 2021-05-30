@@ -38,7 +38,7 @@ class _TestPageState extends State<TestPage>
         onTabItemSelected: (int value) {
           print(value);
           setState(() {
-            _tabController!.index = value;
+            _tabController.index = value;
           });
         },
         icons: [Icons.account_box, Icons.home, Icons.menu],

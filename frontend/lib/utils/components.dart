@@ -75,7 +75,7 @@ class MyButton extends StatelessWidget {
 
   final Widget child;
   final double radius;
-  final Function onTap;
+  final void Function() onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +98,7 @@ class MyButton extends StatelessWidget {
           borderRadius: new BorderRadius.all(
             Radius.circular(this.radius),
           ),
-          onTap: this.onTap(),
+          onTap: this.onTap,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: this.child,
@@ -118,7 +118,8 @@ class MyAlertButton extends StatelessWidget {
 
   final Widget child;
   final double radius;
-  final Function onTap;
+  // TIP  err: This Overlay widget cannot be marked as needing to build because the framework is already in the process of building widgets
+  final void Function() onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +142,7 @@ class MyAlertButton extends StatelessWidget {
           borderRadius: new BorderRadius.all(
             Radius.circular(this.radius),
           ),
-          onTap: this.onTap(),
+          onTap: this.onTap,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: this.child,

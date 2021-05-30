@@ -1,11 +1,11 @@
 import 'dart:math' as math;
 
+import 'package:barcode_scan2/barcode_scan2.dart';
 import 'package:easy_pass/utils/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inkwell_splash/inkwell_splash.dart';
-import 'package:barcode_scan/barcode_scan.dart';
 
 class BottomBar extends StatefulWidget {
   const BottomBar({required this.selectedPage});
@@ -311,11 +311,12 @@ class TabClipper extends CustomClipper<Path> {
 Future scan() async {
   try {
     // 此处为扫码结果，barcode为二维码的内容
-    String barcode = await BarcodeScanner.scan();
+    var result = await BarcodeScanner.scan();
+    String barcode = result.rawContent;
     print('扫码结果: ' + barcode);
     // TODO 跳转到确认界面
   } on PlatformException catch (e) {
-    if (e.code == BarcodeScanner.CameraAccessDenied) {
+    if (e.code == BarcodeScanner.cameraAccessDenied) {
       // 未授予APP相机权限
       // TODO 使用弹窗提示
       print('未授予APP相机权限');

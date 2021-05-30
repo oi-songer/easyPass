@@ -1,3 +1,4 @@
+import 'package:easy_pass/utils/bottom_bar.dart';
 import 'package:easy_pass/utils/components.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,9 @@ class SummaryView extends StatelessWidget {
               MaterialButton(
                 child: Icon(Icons.scanner),
                 color: Colors.grey,
-                onPressed: () {},
+                onPressed: () {
+                  scan();
+                },
               )
             ]),
           ),

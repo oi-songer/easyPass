@@ -8,17 +8,19 @@ from flask.json import jsonify
 
 from app import models, db
 from app.status_code import MISSING_ARGUMENT
-from app.utils import admin_login_required, company_login_required
+from app.auth.jwt import admin_login_required, company_login_required
 from app.auth.jwt import jwt_auth, require_login
 
 bp = Blueprint('template', __name__, url_prefix='/template')
 
 @bp.route('/create', methods=['POST'])
-@company_login_required
+@jwt_auth.login_required
+@require_login([models.Company, models.Admin])
 def create():
-    company : models.Company = jwt_auth.current_user()
-
     data = request.get_json()
+    if (data is None):
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
+        
     title = data.get('title', None)
     description = data.get('description', None)
 
@@ -28,7 +30,7 @@ def create():
     if (models.Template.query.filter_by(title=title, status='approved').first() != None):
         return jsonify(message='该标题已被注册'), HTTPStatus.BAD_REQUEST
 
-    template = models.Template(title, description, company.id)
+    template = models.Template(title, description)
     db.session.add(template)
     db.session.commit()
 
@@ -39,6 +41,7 @@ def create():
 
 
 @bp.route('/get', methods=['GET'])
+@jwt_auth.login_required
 @require_login([models.User, models.Company, models.Admin])
 def get():
     data = request.args
@@ -47,7 +50,7 @@ def get():
 
     if (status is None):
         return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
-    if (status not in ['approved', 'unapproved', 'all']):
+    if (status not in ['approved', 'waiting', 'all']):
         return jsonify(message='status参数不合法'), HTTPStatus.BAD_REQUEST
 
     if (account_id != None):
@@ -58,32 +61,16 @@ def get():
             .join(models.Requirement, models.Requirement.template_id == models.Template.id)\
             .filter(models.Requirement.company_id == account.company_id)
 
-        info_auths : typing.List[models.InfoAuth] = account.info_auths
+    else:
+        templates = models.Template.query
 
-        info_list = []
-        for template in templates:
-            info_list.append(
-                {
-                    'info_id': template.id,
-                    'title': template.title,
-                    'created': True,
-                }
-            )
-        info_list = [
-            {
-                'info_id': info.id,
-                'title': info.template.title,
-                'modify_time': info.modify_time,
-                'created': True,
-            } for index, info in enumerate(infos)
-        ]
-        # TODO
+    print("! count of templates: ", templates.count())
 
     templates : typing.List[models.Template]
     if (status != 'all'):
-        templates = models.Template.query.filter_by(status=status).all()
+        templates = templates.filter_by(status=status).all()
     else:
-        templates = models.Template.query.all()
+        templates = templates.all()
 
     return jsonify({
         'templates': [
@@ -94,9 +81,13 @@ def get():
 
 
 @bp.route('/approve', methods=['POST'])
+@jwt_auth.login_required
 @admin_login_required
 def approve():
     data = request.get_json()
+    if (data is None):
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
+        
     template_id = data.get('template_id', None)
     status = data.get('status', None)
 

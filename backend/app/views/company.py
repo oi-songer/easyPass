@@ -3,10 +3,11 @@ import typing
 from app.status_code import MISSING_ARGUMENT
 from flask import json
 from app.auth.oauth import generate_oauth_key
-from app.auth.jwt import admin_login_required, jwt_auth, generate_jwt_token_for_company
+from app.auth.jwt import admin_login_required, company_login_required
+from app.auth.jwt import jwt_auth, generate_jwt_token_for_company
 from http import HTTPStatus
 from app import models, db
-from app.utils import company_login_required, encode_password
+from app.utils import encode_password
 from flask import Blueprint, request
 from flask.json import jsonify
 
@@ -15,6 +16,9 @@ bp = Blueprint('company', __name__, url_prefix='/company')
 @bp.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
+    if (data is None):
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
+        
     username = data['username']
     password = data['password']
     description = data['description']
@@ -38,6 +42,9 @@ def register():
 @bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
+    if (data is None):
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
+        
     username = data['username']
     password = data['password']
 
@@ -66,6 +73,7 @@ def login():
 
 
 @bp.route('/get_oauth_key', methods=['GET'])
+@jwt_auth.login_required
 @company_login_required
 def get_oauth_key():
     company = jwt_auth.current_user()
@@ -80,6 +88,7 @@ def get_oauth_key():
 
 
 @bp.route('/regenerate_oauth_key', methods=['POST'])
+@jwt_auth.login_required
 @company_login_required
 def regenerate_oauth_key():
     company = jwt_auth.current_user()
@@ -93,11 +102,15 @@ def regenerate_oauth_key():
 
 
 @bp.route('/modify_password', methods=['POST'])
+@jwt_auth.login_required
 @company_login_required
 def modify_password():
     user : models.Company = jwt_auth.current_user()
 
     data = request.get_json()
+    if (data is None):
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
+        
 
     old_password = data['old_password']
     new_password = data['new_password']
@@ -113,13 +126,17 @@ def modify_password():
 
 
 @bp.route('/approve', methods=['POST'])
+@jwt_auth.login_required
 @admin_login_required
 def approve():
     data = request.get_json()
+    if (data is None):
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
+        
     company_id = data.get('company_id', None)
     status = data.get('status', None)
 
-    if (status not in ['approved', 'unapproved']):
+    if (status not in ['approved', 'waiting', 'unapproved']):
         return jsonify(message='status参数不合法'), HTTPStatus.BAD_REQUEST
 
     if (company_id is None or status is None):
@@ -127,7 +144,10 @@ def approve():
 
     company = models.Company.query.get(company_id)
 
-    company.status = status
+    if (status == 'unapproved'):
+        db.session.delete(company)
+    else:
+        company.status = status
 
     db.session.commit()
 
@@ -135,6 +155,7 @@ def approve():
 
 
 @bp.route('/get', methods=['GET'])
+@jwt_auth.login_required
 @admin_login_required
 def get():
     
@@ -143,7 +164,7 @@ def get():
 
     if (status is None):
         return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
-    if (status not in ['approved', 'unapproved', 'all']):
+    if (status not in ['approved', 'waiting', 'all']):
         return jsonify(message='status参数不合法'), HTTPStatus.BAD_REQUEST
 
     companies : typing.List[models.Company]

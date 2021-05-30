@@ -10,28 +10,28 @@ from flask import Blueprint, request
 bp = Blueprint('admin', __name__, url_prefix='/admin')
 
 @bp.route('/register', methods=['POST'])
+@jwt_auth.login_required
 @admin_login_required
 def register():
     data = request.get_json()
+    if (data is None):
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
+        
     username = data.get('username', None)
     password = data.get('password', None)
-    email = data.get('email', None)
     
-    if (username is None or password is None or email is None):
+    if (username is None or password is None):
         return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
 
-    if (models.User.query.filter_by(username=username).first() != None):
+    if (models.Admin.query.filter_by(username=username).first() != None):
         return jsonify(message='用户名已被注册'), HTTPStatus.BAD_REQUEST
-
-    if (models.User.query.filter_by(email=email).first() != None):
-        return jsonify(message='邮箱已被注册'), HTTPStatus.BAD_REQUEST
     
-    user = models.User(username, encode_password(password), email)
+    user = models.Admin(username, encode_password(password))
 
     db.session.add(user)
     db.session.commit()
 
-    if (models.User.query.filter_by(username=username).first() is None):
+    if (models.Admin.query.filter_by(username=username).first() is None):
         return jsonify({'message': '注册失败'}), HTTPStatus.BAD_REQUEST
 
     return jsonify({'message': '注册成功，请前往登录界面登录'}), HTTPStatus.CREATED
@@ -40,6 +40,9 @@ def register():
 @bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
+    if (data is None):
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
+        
     username = data['username']
     password = data['password']
 
@@ -60,11 +63,15 @@ def login():
 
 
 @bp.route('/modify_password', methods=['POST'])
+@jwt_auth.login_required
 @admin_login_required
 def modify_password():
     admin : models.Admin = jwt_auth.current_user()
 
     data = request.get_json()
+    if (data is None):
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
+        
 
     old_password = data['old_password']
     new_password = data['new_password']

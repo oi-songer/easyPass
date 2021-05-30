@@ -9,6 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
 db = SQLAlchemy()
+redis = StrictRedis(host='121.5.160.8', port=6379, db=0, password='redis_pass')
 
 # TIP
 # 该函数是一个应用工厂函数
@@ -31,15 +32,17 @@ def create_app(test_config=None):
     app.cli.add_command(init_db)
     app.cli.add_command(drop_db)
 
-    # connect redis server
-    g.redis = StrictRedis(host='121.5.160.8', port=6379, db=0, password='redis_pass')
-    g.redis.setex()
-
     CORS(app)
 
-    from .views import user, info
-    app.register_blueprint(user.bp)
-    app.register_blueprint(info.bp)
+    from app.views import account, admin, company, doc, info_auth
+    from app.views import info, oauth, requirement, template, user
+    bp_list = [
+        account.bp, admin.bp, company.bp, doc.bp, info_auth.bp,
+        info.bp, oauth.bp, requirement.bp, template.bp, user.bp
+    ]
+    for bp in bp_list:
+        app.register_blueprint(bp)
+    
 
     # a simple page that says hello
 

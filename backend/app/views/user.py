@@ -13,6 +13,9 @@ bp = Blueprint('user', __name__, url_prefix='/user')
 @bp.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
+    if (data is None):
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
+        
     username = data.get('username', None)
     password = data.get('password', None)
     email = data.get('email', None)
@@ -40,6 +43,9 @@ def register():
 @bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
+    if (data is None):
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
+        
     username = data['username']
     password = data['password']
 
@@ -59,11 +65,15 @@ def login():
     return resp, HTTPStatus.OK
 
 @bp.route('/modify_user_info', methods=['POST'])
+@jwt_auth.login_required
 @user_login_required
 def modify_user_info():
     user = jwt_auth.current_user()
     
     data = request.get_json()
+    if (data is None):
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
+        
     username = data.get('username', None)
     # TODO
 
@@ -71,11 +81,15 @@ def modify_user_info():
 
 
 @bp.route('/modify_password', methods=['POST'])
+@jwt_auth.login_required
 @user_login_required
 def modify_password():
     user : models.User = jwt_auth.current_user()
 
     data = request.get_json()
+    if (data is None):
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
+        
 
     old_password = data['old_password']
     new_password = data['new_password']

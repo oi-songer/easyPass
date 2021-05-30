@@ -4,18 +4,22 @@ import http
 from app.status_code import MISSING_ARGUMENT
 from flask.json import jsonify
 from app import db, models
-from app.auth.jwt import jwt_auth, require_login
+from app.auth.jwt import company_login_required, jwt_auth, require_login
 from flask import Blueprint, request
 
-bp = Blueprint('user', __name__, url_prefix='/user')
+bp = Blueprint('requirement', __name__, url_prefix='/requirement')
 
 @bp.route('/create', methods=['POST'])
+@jwt_auth.login_required
 @require_login([models.Company])
 def create():
     company : models.Company = jwt_auth.current_user()
 
     data = request.get_json()
-    template_id = data.get('tempalte_id', None)
+    if (data is None):
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
+        
+    template_id = data.get('template_id', None)
     permission = data.get('permission', None)
     optional = data.get('optional', None)
 
@@ -39,11 +43,15 @@ def create():
 
 
 @bp.route('/remove', methods=['POST'])
+@jwt_auth.login_required
 @require_login([models.Company])
 def remove():
     company : models.Company = jwt_auth.current_user()
     
     data = request.get_json()
+    if (data is None):
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
+        
     template_id = data.get('template_id', None)
 
     requirement = models.Requirement.query.filter_by(company_id = company.id, template_id = template_id).first()
@@ -60,13 +68,17 @@ def remove():
     return jsonify(message='删除成功'), HTTPStatus.OK
 
 
-@bp.route('/edit', methods=['POST'])
-@require_login([models.Company])
-def edit():
+@bp.route('/modify', methods=['POST'])
+@jwt_auth.login_required
+@company_login_required
+def modify():
     company : models.Company = jwt_auth.current_user()
 
     data = request.get_json()
-    template_id = data.get('tempalte_id', None)
+    if (data is None):
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
+        
+    template_id = data.get('template_id', None)
     permission = data.get('permission', None)
     optional = data.get('optional', None)
 

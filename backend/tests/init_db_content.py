@@ -1,12 +1,12 @@
 import hashlib
+
 import typing
-from app.views.company import get_oauth_key
 import enum
-import http
-import requests
+
+from utils import *
 from http import HTTPStatus
 
-api_url = 'localhost:5000'
+api_url = 'http://localhost:5000'
 
 
 def main():
@@ -43,6 +43,12 @@ def main():
             for company in company_list]
         ), '/', len(company_list), sep='')
 
+    # admin: login
+    admin_token = login_admin('admin', 'admin')
+    if (admin_token == None):
+        print("!!![*] admin login failed!")
+        return
+
     # company: create template
     template_list = [
         ['info_title_1', 'this is description for info_title 1'],
@@ -54,37 +60,35 @@ def main():
 
     print('[*] template_succeed: ', 
         sum(
-            [1 if create_template(*template) else 0 
+            [1 if create_template(template[0], template[1], admin_token) else 0 
             for template in template_list]
         ), '/', len(template_list), sep='')
 
-    # admin: login
-    admin_token = login_admin('admin', 'admin')
-    if (admin_token == None):
-        print("!!![*] admin login failed!")
-        return
+    
 
     # admin: get companies
     companies = get_companies(admin_token)
+    # print("This is all companies got from admin:", companies)
     if (companies is None):
         return
 
     # admin: approve companies
     print('[*] approve_company_succeed: ', 
         sum(
-            [1 if approve_company(company.id, admin_token) else 0 
+            [1 if approve_company(company['company_id'], admin_token) else 0 
             for company in companies]
         ), '/', len(companies), sep='')
 
     # admin: get tempaltes
-    templates = get_templates(admin_token)
+    templates = get_templates('waiting', admin_token)
+    # print("This is all templates got from admin:", templates)
     if (templates is None):
         return
 
     # admin: approve template
     print('[*] approve_template_succeed: ', 
         sum(
-            [1 if approve_template(template.id, admin_token) else 0 
+            [1 if approve_template(template['template_id'], admin_token) else 0 
             for template in templates]
         ), '/', len(templates), sep='')
 
@@ -106,13 +110,13 @@ def main():
     print('[*] user_login_succeed')
 
     # user: get templates
-    templates = get_templates(user_token_list[0])
+    templates = get_templates('approved', user_token_list[0])
     if (templates is None):
         return
 
     # user: create info
     cnt = sum([
-        create_info(template['id'], template['title'] + ' for ' + user_list[index][0], user_token)
+        create_info(template['template_id'], template['title'] + ' for ' + user_list[index][0], user_token)
                 for index, user_token in enumerate(user_token_list)
             for template in templates
     ])
@@ -131,11 +135,31 @@ def main():
         print('!!![*] get_info_failed, only', sum(map(len, info_list_list)), 'of', len(user_list) * len(template_list), 'was got')
         return
     print('[*] get_info_succeed')
+    # print('This is all info: ', info_list_list)
+
+    # user: get info detail
+    info_detail_list_list = [
+        [
+            get_info_detail(info['info_id'], user_token)
+            for info in info_list_list[index]
+        ] for index, user_token in enumerate(user_token_list)
+    ]
+    cnt = 0
+    for infos in info_detail_list_list:
+        for info in infos:
+            if (info != None):
+                cnt += 1
+
+    if (cnt != len(user_list) * len(template_list)):
+        print('!!![*] get_info_detail_failed, only', sum(map(len, info_list_list)), 'of', len(user_list) * len(template_list), 'was got')
+        return
+    print('[*] get_info_detail_succeed')
+    # print('This is all info in detail: ', info_detail_list_list)
 
     # user: modify info
     cnt = sum([
-        modify_info(info['id'], info['content'] + ' after edited', user_token_list[index])
-                for index, info_list in enumerate(info_list_list)
+        modify_info(info['info_id'], info['content'] + ' after edited', user_token_list[index])
+                for index, info_list in enumerate(info_detail_list_list)
             for info in info_list
     ])
     if (cnt != len(user_list) * len(template_list)):
@@ -146,7 +170,7 @@ def main():
     # user: edit password
     cnt = sum([
         modify_user_pass(user[1], user[1] + '_new', user_token_list[index])
-            for index, user in user_list
+            for index, user in enumerate(user_list)
     ])
     if (cnt != len(user_list)):
         print('!!![*] edit_user_pass_failed, only', cnt, 'of', len(user_list), 'was editd')
@@ -187,7 +211,7 @@ def main():
     # company: edit password
     cnt = sum([
         modify_company_pass(company[1], company[1] + '_new', company_token_list[index])
-            for index, company in company_list
+            for index, company in enumerate(company_list)
     ])
     if (cnt != len(company_list)):
         print('!!![*] edit_company_pass_failed, only', cnt, 'of', len(company_list), 'was editd')
@@ -205,6 +229,7 @@ def main():
     ])
     if (cnt != len(templates) * len(company_token_list)):
         print('!!![*] add_requirement_failed, only', cnt , 'of', len(company_token_list), 'was got and right')
+        return
     print('[*] add_requirement_succeed')
 
     # admin: add doc
@@ -216,15 +241,17 @@ def main():
 
     # ----------oauth-------------------
 
+
     # get oauth key
     cnt = 0
     for company_token in company_token_list:
-        dic = get_oauth_key(company_token)
+        dic = get_company_oauth_key(company_token)
         if (dic != None and dic.get('client_id', None) == "" and dic.get('secret_key', None) == ""):
             cnt += 1
     if (cnt != len(company_token_list)):
-        print('!!![*] get_oauth_key_failed, only', cnt , 'of', len(company_token_list), 'was got and right')
-    print('[*] get_oauth_key_succeed')
+        print('!!![*] get_company_oauth_key_failed, only', cnt , 'of', len(company_token_list), 'was got and right')
+        return
+    print('[*] get_company_oauth_key_succeed')
 
     # regenerate oauth key
     cnt = sum([
@@ -233,11 +260,12 @@ def main():
     ])
     if (cnt != len(company_token_list)):
         print('!!![*] regenerate_oauth_key_failed, only', cnt , 'of', len(company_token_list), 'was got and right')
+        return
     print('[*] regenerate_oauth_key_failed_succeed')
-
+    
     # reget oauth key
     oauth_key_list = [
-        get_oauth_key(company_token)
+        get_company_oauth_key(company_token)
             for company_token in company_token_list
     ]
     cnt = sum([
@@ -271,12 +299,14 @@ def main():
             cnt += 1
     if (cnt != len(company_token_list)):
         print('!!![*] get_register_requirements_failed, only', cnt , 'of', len(company_token_list), 'was got and right')
+        return
     print('[*] get_register_requirement_succeed')
 
+    # print(requirements_list[0])
     # third-party register
     third_party_tokens_list = [
         [
-            third_party_register(oauth_key['client_id'], requirements_list[index]['requirement_id'], user_token)
+            third_party_register(oauth_key['client_id'], requirements_list[index]['requirements'], user_token)
                 for user_token in user_token_list
         ] for index, oauth_key in enumerate(oauth_key_list)
     ]
@@ -291,6 +321,8 @@ def main():
         print('!!![*] third-party-register_failed, only', cnt , 'of', len(user_list) * len(company_list), 'was got and right')
     print('[*] third-party-register_succeed')
 
+    # print("third_party_token[0][0]", third_party_tokens_list[0][0])
+
     # check if has account again using requirements api
     new_requirements_list = [
         get_register_requirements(oauth_key['client_id'], user_token_list[0])
@@ -303,13 +335,14 @@ def main():
             cnt += 1
     if (cnt != len(company_token_list)):
         print('!!![*] reget_register_requirements_failed, only', cnt , 'of', len(company_token_list), 'was got and right')
+        return
     print('[*] reget_register_requirement_succeed')
 
     # thrid-party login
     new_third_party_tokens_list = [
-        third_party_login(oauth_key['client_id'], user_token)
-                for oauth_key in oauth_key_list
-            for user_token in user_token_list
+        [third_party_login(oauth_key['client_id'], user_token)
+            for user_token in user_token_list]
+        for oauth_key in oauth_key_list
     ]
     cnt = 0
     for third_party_tokens in new_third_party_tokens_list:
@@ -320,6 +353,7 @@ def main():
                 cnt += 1
     if (cnt != len(user_list) * len(company_list)):
         print('!!![*] third-party-login_failed, only', cnt , 'of', len(user_list) * len(company_list), 'was got and right')
+        return
     print('[*] third-party-login_succeed')
 
     # company: change requirements
@@ -329,18 +363,20 @@ def main():
             for template in templates
     ])
     if (cnt != len(templates) * len(company_token_list)):
-        print('!!![*] modify_requirement_failed, only', cnt , 'of', len(company_token_list), 'was got and right')
+        print('!!![*] modify_requirement_failed, only', cnt , 'of', len(templates) * len(company_token_list), 'was got and right')
+        return
     print('[*] modify_requirement_succeed')
 
     # company: delete requirements
     cnt = sum([
         remove_requirement(template['template_id'], company_token)
-                for company_token in company_token_list[:1]
-            for template in templates
+                for company_token in company_token_list
+            for template in templates[:1]
     ])
-    if (cnt != len(templates) * len(company_token_list)):
-        print('!!![*] add_requirement_failed, only', cnt , 'of', len(company_token_list), 'was got and right')
-    print('[*] add_requirement_succeed')
+    if (cnt != len(company_token_list)):
+        print('!!![*] del_requirement_failed, only', cnt , 'of', len(company_token_list), 'was got and right')
+        return
+    print('[*] del_requirement_succeed')
 
     # check requirements again
     # check if has account again using requirements api
@@ -348,6 +384,7 @@ def main():
         get_register_requirements(oauth_key['client_id'], user_token_list[0])
             for oauth_key in oauth_key_list
     ]
+    # print('new_new_req: ', new_new_requirements_list[0])
 
     cnt = 0
     for requirements in new_new_requirements_list:
@@ -355,12 +392,14 @@ def main():
             cnt += 1
     if (cnt != len(company_token_list)):
         print('!!![*] rereget_register_requirements_failed, only', cnt , 'of', len(company_token_list), 'was got and right')
+        return
     print('[*] rereget_register_requirement_succeed')
 
+    # TODO might have some problems
     # changed requirements auth (by user) (the same as register?)
     third_party_tokens_list = [
         [
-            third_party_register(oauth_key['client_id'], new_new_requirements_list[index]['requirement_id'], user_token)
+            third_party_register(oauth_key['client_id'], new_new_requirements_list[index]['requirements'], user_token)
                 for user_token in user_token_list
         ] for index, oauth_key in enumerate(oauth_key_list)
     ]
@@ -373,418 +412,38 @@ def main():
                 cnt += 1
     if (cnt != len(user_list) * len(company_list)):
         print('!!![*] accpet_permission_failed, only', cnt , 'of', len(user_list) * len(company_list), 'was got and right')
+        return
     print('[*] accpet_permission_succeed')
 
     # company: get info
     info_list_list_list = [
         [
             [
-                get_info_with_oauth(template['id'], thrid_party_token, oauth_key['secret_key'])
-                    for template in templates
-            ] for thrid_party_token in third_party_tokens_list
-        ] for oauth_key in oauth_key_list
+                get_info_with_oauth(template['template_id'], thrid_party_token, oauth_key['secret_key'])
+                    for template in templates[1:]
+            ] for thrid_party_token in third_party_tokens_list[index]
+        ] for index, oauth_key in enumerate(oauth_key_list)
     ]
 
     # company: edit info
     cnt = sum([
-        modify_info_with_oauth(template['id'], info_list_list_list[index1][index2][index3] + ' after oauth edit', thrid_party_token, oauth_key['secret_key'])
+        modify_info_with_oauth(template['template_id'], info_list_list_list[index1][index2][index3-1] + ' after oauth edit', thrid_party_token, oauth_key['secret_key'])
                 for index1, oauth_key in enumerate(oauth_key_list)
             for index2, thrid_party_token in enumerate(third_party_tokens_list[index1])
-        for index3, template in enumerate(templates)
+        for index3, template in enumerate(templates[1:])
     ])
-    if (cnt != len(templates) * len(third_party_tokens_list[0]) * len(oauth_key_list)):
+    if (cnt != len(templates[1:]) * len(third_party_tokens_list[0]) * len(oauth_key_list)):
         print('!!![*] modify_info_by_oauth_failed, only', cnt , 'of', len(user_list) * len(company_list), 'was got and right')
+        return
     print('[*] modify_info_by_oauth_succeed')
 
     # refresh token
     new_oauth_token_list = [
         refresh_token(third_party_token)
-        for third_party_token in third_party_tokens_list
+            for third_party_tokens in third_party_tokens_list
+        for third_party_token in third_party_tokens
     ]
-
-
-def encode_with_nonce_and_timestamp(key_list : typing.List[int]):
-    key_list.sort()
-    s = ''.join(map(str, key_list))
-    h = hashlib.md5(s)
-    return h.hexdigest()
-
-
 
 if __name__=="__main__":
     main()
 
-def _post(url, data, token = None):
-    if (token != None):
-        res = requests.post(api_url + url, data, headers={"Authorization": "Bearer " + token})
-    else:    
-        res = requests.post(api_url + url, data)
-    res.encoding = 'utf-8'
-
-    return res
-
-def _get(url, data, token = None):
-    if (token != None):
-        res = requests.get(api_url + url, data, headers={"Authorization": "Bearer " + token})
-    else:    
-        res = requests.get(api_url + url, data)
-    res.encoding = 'utf-8'
-
-    return res
-
-
-def create_user(username, password, email):
-    res = _post('/user/register', {
-        'username': username,
-        'password': password,
-        'email': email,
-    })
-
-    if (res.status_code == HTTPStatus.OK and
-        res.json().get('message', None) == '注册成功，请前往登录界面登录'):
-        return 1
-    
-    return 0
-
-def create_company(username, password, description):
-    res = _post('/company/register', {
-        'username': username,
-        'password': password,
-        'description':  description,
-    })
-
-    if (res.status_code == HTTPStatus.OK and
-        res.json().get('message', None) == '注册成功，请前往登录界面登录'):
-        return 1
-    
-    return 0
-
-def create_template(title, description):
-    res = _post('/template/create', {
-        'title': title,
-        'description': description,
-    })
-
-    res.json()
-    
-    if (res.status_code == HTTPStatus.OK and
-        res.json().get('message', None) == '申请成功，请等待审批'):
-        return 1
-    
-    return 0
-
-def login_admin(username, password):
-    res = _post('/admin/login',{
-        'username': 'admin',
-        'password': 'admin',
-    })
-
-    token = res.json().get('token', None)
-    if (token != None):
-        return token
-    
-    return None
-
-def get_companies(token):
-    res = _get('/company/get',  {
-        'status': 'unapproved',
-    }, token=token)
-
-    companies = res.json().get('companies', None)
-    if (companies != None):
-        return companies
-
-    print('!!![*] got error from /company/get:', res.json())
-    return None
-
-def approve_company(company_id, token):
-    res = _post('/company/approve',{
-        'company_id': company_id,
-        'status': 'approved'
-    }, token=token)
-
-    if (res.status_code == HTTPStatus.OK and res.json().get('message', None) == 'succeed'):
-        return 1
-
-    return 0
-
-def get_templates(token):
-    res = _get('/template/get',  {
-        'status': 'unapproved',
-    }, token=token)
-
-    templates = res.json().get('templates', None)
-    if (templates != None):
-        return templates
-
-    print('!!![*] got error from /template/get:', res.json())
-    return None
-
-def approve_template(template_id, token):
-    res = _post('/template/approve',{
-        'template_id': template_id,
-        'status': 'approved'
-    }, token=token)
-
-    if (res.status_code == HTTPStatus.OK and res.json().get('message', None) == 'succeed'):
-        return 1
-
-    return 0
-
-def create_admin(username, password, token):
-    res = _post('/admin/create', {
-        'username': username,
-        'password': password,
-    }, token=token)
-
-    if (res.status_code == HTTPStatus.OK and
-        res.json().get('message', None) == '注册成功，请前往登录界面登录'):
-        return 1
-    
-    return 0
-
-def login_user(username, password):
-    res = _post('/user/login', {
-        'username': username,
-        'password': password,
-    })
-    
-    token = res.json().get('token', None)
-    if (token != None):
-        return token
-    
-    return None
-
-
-def create_info(template_id, content, token):
-    res = _post('/info/create', {
-        'template_id': template_id,
-        'content': content,
-    }, token=token)
-
-    if (res.status_code == HTTPStatus.CREATED and res.json().get('message', None) == '创建信息成功'):
-        return 1
-    
-    return 0
-
-def get_info(token, keywords='', filter_method='我的'):
-    res = _get('/info/get', {
-        'keywords': keywords,
-        'filter_method': filter_method
-    }, token=token)
-
-    infos = res.json().get('infos', None)
-    if (infos != None):
-        return infos
-
-    print('!!![*] got error from /info/get:', res.json())
-    return None
-
-
-def modify_info(info_id, content, token):
-    res = _post('/info/modify', {
-        'info_id': info_id,
-        'content': content,
-    }, token=token)
-
-    if (res.status_code == HTTPStatus.OK and res.json().get('message', None) == '修改成功'):
-        return 1
-
-    return 0
-
-def modify_user_pass(old_pass, new_pass, token):
-    res = _post('/user/modify_password', {
-        'old_password': old_pass,
-        'new_password': new_pass,
-    }, token=token)
-
-    if (res.status_code == HTTPStatus.OK and res.json().get('message', None) == '更改密码成功'):
-        return 1
-
-    return 0
-
-def login_company(username, password):
-    res = _post('/company/login', {
-        'username': username,
-        'password': password,
-    })
-    
-    token = res.json().get('token', None)
-    if (token != None):
-        return token
-    
-    return None
-
-def modify_company_pass(old_pass, new_pass, token):
-    res = _post('/company/modify_password', {
-        'old_password': old_pass,
-        'new_password': new_pass,
-    }, token=token)
-
-    if (res.status_code == HTTPStatus.OK and res.json().get('message', None) == '更改密码成功'):
-        return 1
-
-    return 0
-
-def get_company_oauth_key(token):
-    res = _get('/company/get_oauth_key', {}, token=token)
-
-    if (res.status_code != HTTPStatus.OK):
-        return None
-
-    return res.json()
-
-def regenerate_oauth_key(token):
-    res = _get('/company/regenerate_oauth_key', {}, token=token)
-
-    if (res.status_code == HTTPStatus.OK):
-        return 1
-
-    return 0
-
-# def check_register_status(user_token, client_id):
-#     res = _get('/account/third_party_check_register', {
-#         'client_id': client_id,
-#     }, token=user_token)
-
-#     if (res.json().get('message', None) == 'registerd'):
-#         return True
-
-#     return False
-
-
-def get_register_requirements(client_id, user_token):
-    res = _get('/account/third_party_register_requirements_info', {
-        'client_id': client_id,
-    }, token=user_token)
-
-    requirements = res.json().get('requirements', None)
-    if (requirements != None):
-        return res.json()
-
-    return None
-
-def third_party_register(client_id, req_id_list, user_token, info_auth_id_list = None):
-    if (info_auth_id_list is None):
-        info_auth_id_list = ["" * len(req_id_list)]
-    res = _post('/account/third_party_register', {
-        'client_id': client_id,
-        'approvements': [
-            {
-                'requirement_id': req_id,
-                'old_info_auth_id': info_auth_id_list[index],
-                'approvement': True,
-            } for index, req_id in enumerate(req_id_list)
-        ]
-    })
-
-    if (res.status_code == HTTPStatus.OK and res.json.get('message', None) == 'succeed'):
-        access_token = res.json.get('access_token')
-        refresh_token = res.json.get('refresh_token')   
-        return {
-            'access_token': access_token,
-            'refresh_token': refresh_token,
-        }
-
-    return None
-
-def third_party_login(client_id, user_token):
-    res = _post('/account/third_party_login', {
-        'client_id': client_id,
-    }, token=user_token)
-
-    if (res.status_code == HTTPStatus.OK and res.json.get('message', None) == 'succeed'):
-        access_token = res.json.get('access_token')
-        refresh_token = res.json.get('refresh_token')   
-        return {
-            'access_token': access_token,
-            'refresh_token': refresh_token,
-        }
-
-def create_requirement(template_id, permission, optional, company_token):
-    res = _post('/requirement/create', {
-        'template_id': template_id,
-        'permission': permission,
-        'optional': optional,
-    }, token = company_token)
-
-    if (res.status_code == HTTPStatus.OK and res.json().get('message', None) == '创建成功'):
-        return 1
-    
-    return 0
-
-def modify_requirement(template_id, permission, optional, company_token):
-    res = _post('/requirement/modify', {
-        'template_id': template_id,
-        'permission': permission,
-        'optional': optional,
-    }, token = company_token)
-
-    if (res.status_code == HTTPStatus.OK and res.json().get('message', None) == '修改成功'):
-        return 1
-    
-    return 0
-
-def remove_requirement(template_id, company_token):
-    res = _post('/requirement/modify', {
-        'template_id': template_id,
-    }, token = company_token)
-
-    if (res.status_code == HTTPStatus.OK and res.json().get('message', None) == '删除成功'):
-        return 1
-    
-    return 0
-
-def get_info_with_oauth(template_id, thrid_party_token, secret_key):
-    import random
-    import time
-    random.seed(time.time())
-    nonce = str(random.randint())
-    timestamp = int(round(time.time()))
-    sign = encode_with_nonce_and_timestamp([nonce, timestamp, secret_key])
-
-    res = _post('/oauth/get_info', {
-        'nonce': nonce,
-        'timestamp': timestamp,
-        'sign': sign,
-        'template_id': template_id,
-    }, token=thrid_party_token)
-
-    if (res.status_code == HTTPStatus.OK and res.json().get('message', None) == 'succeed'):
-        return res.json().get('content', None)
-
-    return None
-
-def modify_info_with_oauth(template_id, content, thrid_party_token, secret_key):
-    import random
-    import time
-    random.seed(time.time())
-    nonce = str(random.randint())
-    timestamp = int(round(time.time()))
-    sign = encode_with_nonce_and_timestamp([nonce, timestamp, secret_key])
-
-    res = _post('/oauth/modify_info', {
-        'nonce': nonce,
-        'timestamp': timestamp,
-        'sign': sign,
-        'template_id': template_id,
-        'content': content,
-    }, token=thrid_party_token)
-
-    if (res.status_code == HTTPStatus.OK and res.json().get('message', None) == 'succeed'):
-        return 1
-
-    return 0
-
-def refresh_token(token):
-    res = _post('/oauth/refresh_token', {}, token=token)
-    
-    if (res.status_code == HTTPStatus.OK and res.json.get('message', None) == 'succeed'):
-        access_token = res.json.get('access_token')
-        refresh_token = res.json.get('refresh_token')   
-        return {
-            'access_token': access_token,
-            'refresh_token': refresh_token,
-        }
-    
-    return None

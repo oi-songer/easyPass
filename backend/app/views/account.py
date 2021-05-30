@@ -11,11 +11,15 @@ from flask import Blueprint, request
 bp = Blueprint('account', __name__, url_prefix='/account')
 
 @bp.route('/third_party_login', methods=['POST'])
+@jwt_auth.login_required
 @user_login_required
 def third_party_login():
     user = jwt_auth.current_user()
 
     data = request.get_json()
+    if (data is None):
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
+
     client_id = data.get('client_id', None)
 
     if (client_id is None):
@@ -70,6 +74,7 @@ def third_party_login():
 
 
 @bp.route('/check_requirements_changes', methods=['GET'])
+@jwt_auth.login_required
 @user_login_required
 def check_requirements_changes():
     user : models.User = jwt_auth.current_user()
@@ -89,14 +94,14 @@ def check_requirements_changes():
     # check if user has this info
     for requirement in requirements:
         requirement['exist'] = True
-        info = user.infos.query.filter_by(template_id=requirement.template_id).first()
+        info = user.infos.filter_by(template_id=requirement['template_id']).first()
         if (info is None):
             requirement['exist'] = False
 
     account = models.Account.query.filter_by(company_id=company.id, user_id=user.id).first()
 
     # if it's a new account
-    if (account != None):
+    if (account == None):
         return jsonify(requirements=requirements, new_account=True), HTTPStatus.OK
 
     ret_requirements = []
@@ -106,7 +111,7 @@ def check_requirements_changes():
             # 多表联合
             info_auth : models.InfoAuth = models.InfoAuth.query\
                 .join(models.Account, models.InfoAuth.account_id == models.Account.id)\
-                .query.filter_by(company_id=company.id).first()
+                .filter_by(company_id=company.id).first()
 
             if (info_auth == None):
                 if (requirement['optional'] == True):
@@ -118,17 +123,21 @@ def check_requirements_changes():
                     continue
                 requirement['old_permission'] = info_auth.permission
 
-        ret_requirements += requirement
+        ret_requirements.append(requirement)
 
     return jsonify(requirements=ret_requirements, new_account=False), HTTPStatus.OK
 
 
 # 该接口不仅仅在注册时使用，在企业的信息需求发生变更时也会被调用
 @bp.route('/third_party_register', methods=['POST'])
+@jwt_auth.login_required
 def third_party_register():
     user : models.User = jwt_auth.current_user()
 
     data = request.get_json()
+    if (data is None):
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
+
     client_id = data.get('client_id', None)
     approvements = data.get('approvements', None)
 
@@ -144,6 +153,7 @@ def third_party_register():
     # 如果当前未注册
     if (account is None):
         account = models.Account(user.id, company.id)
+        db.session.add(account)
         db.session.flush()
 
     try:
@@ -151,19 +161,18 @@ def third_party_register():
         for approvement in approvements:
             requirement : models.Requirement = models.Requirement.query.get(approvement['requirement_id'])
 
-            info_auth_id = approvement.get('old_info_auth_id', '')
+            info_auth = models.InfoAuth.query.filter_by(requirement_id = requirement.id, account_id = account.id).first()
+
             # 如果该info_auth已经存在
-            if (info_auth_id != ''):
-                info_auth : models.InfoAuth = models.InfoAuth.query.get(info_auth_id)
-                info_auth.permission = info_auth.permission
-                info_auth.optional = info_auth.optional
+            if (info_auth != None):
+                info_auth.permission = requirement.permission
             else:   # 否则需要新建一个info_auth
-                info = models.Info.query.filter_by(template_id = requirement.template_id).first()
+                info = models.Info.query.filter_by(template_id = requirement.template_id, user_id=user.id).first()
                 # 如果用户没有填写对应的Info
                 if (info is None):
                     raise Exception('用户未填写Info')
 
-                info_auth = models.InfoAuth(account.id, info.id, requirement.template_id, requirement.permission, requirement.optional)
+                info_auth = models.InfoAuth(account.id, info.id, requirement.id, requirement.permission, requirement.optional)
                 db.session.add(info_auth)
     except Exception as e:
         db.session.rollback()
@@ -199,12 +208,14 @@ def third_party_register():
 
 
 @bp.route('/get', methods=['GET'])
+@jwt_auth.login_required
 @user_login_required
 def get():
     # TODO
     pass
 
 @bp.route('/remove', methods=['POST'])
+@jwt_auth.login_required
 @user_login_required
 def remove():
     # TODO

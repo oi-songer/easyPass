@@ -9,18 +9,19 @@ from app.status_code import FORBIDDEN, MISSING_ARGUMENT
 from app.utils import encode_password, encode_with_nonce_and_timestamp
 from http import HTTPStatus
 from flask.json import jsonify
-from app import db, models
+from app import db, models, redis
 from app.auth.jwt import auth_access_token_required, generate_jwt_token, generate_jwt_token_for_user, jwt_auth, refresh_token_required, user_login_required
-from flask import Blueprint, request, g
+from flask import Blueprint, request
 
 bp = Blueprint('oauth', __name__, url_prefix='/oauth')
 
 
 @bp.route('/get_info', methods=['POST'])
+@jwt_auth.login_required
 @auth_access_token_required
 def get_info():
     dic = jwt_auth.current_user()
-    token = dic.get('oauth_access_token')
+    token = dic.get('access_token')
     client_id = token.get('client_id', None)
     user_id = token.get('user_id', None)
 
@@ -28,10 +29,13 @@ def get_info():
         return jsonify(message=FORBIDDEN), HTTPStatus.FORBIDDEN
 
     data = request.get_json()
+    if (data is None):
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
+        
     nonce = data.get('nonce', None)
     timestamp = data.get('timestamp', None)
     sign = data.get('sign', None)
-    template_id = token.get('template_id', None)
+    template_id = data.get('template_id', None)
 
     if (nonce is None or timestamp is None or sign is None):
         return jsonify(message=FORBIDDEN), HTTPStatus.FORBIDDEN
@@ -47,13 +51,13 @@ def get_info():
     # 鉴权部分
 
     # TIP redis config
-    if (g.redis.exists(nonce)):
+    if (redis.exists(nonce)):
         return jsonify(message='Nonce is unlegal'), HTTPStatus.FORBIDDEN
-    g.redis.setex(nonce, 30, 'true')
+    redis.setex(nonce, 30, 'true')
 
     # TIP
     cur_timestamp = int(round(time.time()))
-    if (cur_timestamp - timestamp < 0 or cur_timestamp - timestamp > 30):
+    if (cur_timestamp - int(timestamp) < 0 or cur_timestamp - int(timestamp) > 30):
         return jsonify(message='Timestamp is unlegal'), HTTPStatus.FORBIDDEN
 
     # TIP
@@ -62,21 +66,31 @@ def get_info():
     if (sign != my_sign):
         return jsonify(message=FORBIDDEN), HTTPStatus.FORBIDDEN
 
-    info_auth : models.InfoAuth = models.InfoAuth.query.join(models.Account, models.InfoAuth.account_id == models.Account.id)\
-        .query.filter_by(user_id=user_id, company_id=company.id).first()
+
+    account : models.Account = models.Account.query.filter_by(user_id=user_id, company_id=company.id).first()
+    if (account is None):
+        return jsonify(message=FORBIDDEN), HTTPStatus.FORBIDDEN
+
+    info_auth = models.InfoAuth.query.join(models.Requirement, models.InfoAuth.requirement_id == models.Requirement.id)\
+        .filter(
+        models.InfoAuth.account_id == account.id,
+        models.Requirement.template_id == template_id,
+    ).first()
+
     if (info_auth == None):
         return jsonify(message=FORBIDDEN), HTTPStatus.FORBIDDEN
 
     # 业务逻辑部分
     info = info_auth.info
 
-    return jsonify(message='succeed', infos=info.content), HTTPStatus.OK
+    return jsonify(message='succeed', info=info.content), HTTPStatus.OK
 
 @bp.route('/modify_info', methods=['POST'])
+@jwt_auth.login_required
 @auth_access_token_required
 def modify_info():
     dic = jwt_auth.current_user()
-    token = dic.get('oauth_access_token')
+    token = dic.get('access_token')
     client_id = token.get('client_id', None)
     user_id = token.get('user_id', None)
 
@@ -84,11 +98,14 @@ def modify_info():
         return jsonify(message=FORBIDDEN), HTTPStatus.FORBIDDEN
 
     data = request.get_json()
+    if (data is None):
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
+        
     nonce = data.get('nonce', None)
     timestamp = data.get('timestamp', None)
     sign = data.get('sign', None)
-    template_id = token.get('template_id', None)
-    content = token.get('content', None)
+    template_id = data.get('template_id', None)
+    content = data.get('content', None)
 
     if (nonce is None or timestamp is None or sign is None):
         return jsonify(message=FORBIDDEN), HTTPStatus.FORBIDDEN
@@ -104,13 +121,13 @@ def modify_info():
     # 鉴权部分
 
     # TIP redis config
-    if (g.redis.exists(nonce)):
+    if (redis.exists(nonce)):
         return jsonify(message='Nonce is unlegal'), HTTPStatus.FORBIDDEN
-    g.redis.setex(nonce, 30, 'true')
+    redis.setex(nonce, 30, 'true')
 
     # TIP
     cur_timestamp = int(round(time.time()))
-    if (cur_timestamp - timestamp < 0 or cur_timestamp - timestamp > 30):
+    if (cur_timestamp - int(timestamp) < 0 or cur_timestamp - int(timestamp) > 30):
         return jsonify(message='Timestamp is unlegal'), HTTPStatus.FORBIDDEN
 
     # TIP
@@ -119,8 +136,18 @@ def modify_info():
     if (sign != my_sign):
         return jsonify(message=FORBIDDEN), HTTPStatus.FORBIDDEN
 
-    info_auth : models.InfoAuth = models.InfoAuth.query.join(models.Account, models.InfoAuth.account_id == models.Account.id)\
-        .query.filter_by(user_id=user_id, company_id=company.id).first()
+    # print('! edit user ', user_id, ' with template ', template_id, ' with company', company.id)
+
+    account : models.Account = models.Account.query.filter_by(user_id=user_id, company_id=company.id).first()
+    if (account is None):
+        return jsonify(message=FORBIDDEN), HTTPStatus.FORBIDDEN
+
+    info_auth = models.InfoAuth.query.join(models.Requirement, models.InfoAuth.requirement_id == models.Requirement.id)\
+        .filter(
+        models.InfoAuth.account_id == account.id,
+        models.Requirement.template_id == template_id,
+    ).first()
+
     if (info_auth == None or info_auth.permission != 'all'):
         return jsonify(message=FORBIDDEN), HTTPStatus.FORBIDDEN
     
@@ -132,6 +159,7 @@ def modify_info():
     return jsonify(message='succeed'), HTTPStatus.OK
 
 @bp.route('/refresh_token', methods=['POST'])
+@jwt_auth.login_required
 @refresh_token_required
 def refresh_token():
     dic = jwt_auth.current_user()

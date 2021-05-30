@@ -49,13 +49,20 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: MotionTabBarView(
-        controller: _tabController,
+      body: Column(
         children: [
-          SummaryView(),
-          AccountView(),
-          InfoView(),
-          UserSettingView(),
+          SizedBox(height: MediaQuery.of(context).padding.top),
+          Expanded(
+            child: MotionTabBarView(
+              controller: _tabController,
+              children: [
+                SummaryView(),
+                AccountView(),
+                InfoView(),
+                UserSettingView(),
+              ],
+            ),
+          ),
         ],
       ),
       floatingActionButton: floatingButton,

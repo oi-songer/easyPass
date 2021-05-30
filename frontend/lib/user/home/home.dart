@@ -1,5 +1,7 @@
 import 'package:easy_pass/user/edit_info.dart';
+import 'package:easy_pass/user/home/account_view.dart';
 import 'package:easy_pass/user/home/info_view.dart';
+import 'package:easy_pass/user/home/setting_view.dart';
 import 'package:easy_pass/user/home/summary_view.dart';
 import 'package:easy_pass/utils/app_theme.dart';
 import 'package:flutter/cupertino.dart';
@@ -51,17 +53,9 @@ class _HomePageState extends State<HomePage>
         controller: _tabController,
         children: [
           SummaryView(),
-          Container(
-            child: Center(
-              child: Text("This is account page"),
-            ),
-          ),
+          AccountView(),
           InfoView(),
-          Container(
-            child: Center(
-              child: Text("This is setting page"),
-            ),
-          ),
+          UserSettingView(),
         ],
       ),
       floatingActionButton: floatingButton,

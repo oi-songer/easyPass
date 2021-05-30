@@ -51,6 +51,7 @@ class _HomePageState extends State<HomePage>
     return Scaffold(
       body: Column(
         children: [
+          // TIP
           SizedBox(height: MediaQuery.of(context).padding.top),
           Expanded(
             child: MotionTabBarView(

@@ -12,23 +12,42 @@ class SummaryView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 20, left: 20, bottom: 20),
-            child: Row(children: [
-              Text(
-                // TODO 移动位置
-                "首页",
-                textAlign: TextAlign.left,
-                style: TitleTextStyle,
-              ),
-              Expanded(child: SizedBox()),
-              MaterialButton(
-                child: Icon(Icons.scanner),
-                color: Colors.grey,
-                onPressed: () {
-                  scan();
-                },
-              )
-            ]),
+            padding:
+                const EdgeInsets.only(top: 10, right: 20, left: 20, bottom: 20),
+            child: Row(
+              children: [
+                Text(
+                  // TODO 移动位置
+                  "首页",
+                  textAlign: TextAlign.left,
+                  style: TitleTextStyle,
+                ),
+                Expanded(child: SizedBox()),
+                Padding(
+                  padding: new EdgeInsets.only(right: 10),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Colors.white54,
+                      shape: BoxShape.circle,
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                            color: Colors.grey.withOpacity(0.4),
+                            offset: const Offset(0, 2),
+                            blurRadius: 8.0),
+                      ],
+                    ),
+                    child: IconButton(
+                      padding: new EdgeInsets.all(10),
+                      onPressed: () {
+                        // TODO
+                      },
+                      icon: Icon(Icons.qr_code_scanner),
+                      // color: Colors.grey,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
           Expanded(
             child: AnimationLimiter(

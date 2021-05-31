@@ -1,34 +1,37 @@
-import 'package:dio/dio.dart';
+import 'dart:convert';
+import 'dart:html';
+import 'package:http/http.dart' as http;
+
+// import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 const String ApiUrl = 'http://121.5.160.8:5000/';
 
-class BackendResponse {
-  int code;
-  String data;
-
-  BackendResponse({required this.code, required this.data});
-}
-
 class BackendClient {
-  static var client = Dio(BaseOptions(baseUrl: ApiUrl));
+  static BackendClient _instance = BackendClient._internal();
+  factory BackendClient() => _instance;
 
-  static Future<BackendResponse> post(
-      String path, Map<String, String> body) async {
-    var ret = client.post(path, data: body).then(
-      (response) {
-        return BackendResponse(
-          code: response.statusCode!,
-          data: response.data.toString(),
-        );
-      },
-      onError: (e) {
-        print(e);
-        return BackendResponse(
-          code: 408,
-          data: "无法连接到服务器",
-        );
-      },
-    );
-    return ret;
+  late http.Client client;
+
+  BackendClient._internal() {
+    client = http.Client();
+  }
+
+  Future<http.Response> post(String path, Map<String, dynamic> body,
+      {bool useToken = true}) async {
+    var url = Uri.parse(ApiUrl + path);
+    Map<String, String> headers = Map<String, String>.from(
+        {"Content-Type": "application/json; charset=UTF-8"});
+    if (useToken) {
+      // TODO
+    }
+
+    var response =
+        await http.post(url, body: jsonEncode(body), headers: headers);
+    print('!Response status: ${response.statusCode}');
+    print('!Response body: ${response.body}');
+
+    return response;
   }
 }

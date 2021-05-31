@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:easy_pass/user/edit_info.dart';
+import 'package:easy_pass/user/info.dart';
 import 'package:easy_pass/utils/app_theme.dart';
 import 'package:easy_pass/utils/components.dart';
 import 'package:flutter/cupertino.dart';

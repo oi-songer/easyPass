@@ -1,4 +1,4 @@
-import 'package:easy_pass/user/edit_info.dart';
+import 'package:easy_pass/user/info.dart';
 import 'package:easy_pass/user/home/account_view.dart';
 import 'package:easy_pass/user/home/info_view.dart';
 import 'package:easy_pass/user/home/setting_view.dart';

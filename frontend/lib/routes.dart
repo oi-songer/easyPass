@@ -1,16 +1,12 @@
 import 'package:easy_pass/regitster.dart';
-import 'package:easy_pass/user/accounts.dart';
-import 'package:easy_pass/user/edit_info.dart';
-// import 'package:easy_pass/user/home.dart';
+import 'package:easy_pass/user/account.dart';
+import 'package:easy_pass/user/home/home.dart';
 import 'package:easy_pass/user/info.dart';
-import 'package:easy_pass/user/settings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_pass/welcome.dart';
 import 'package:easy_pass/test.dart';
 import 'package:easy_pass/login.dart';
-
-import 'user/home/home.dart';
 
 typedef PathWidgetBuilder = Widget Function(BuildContext);
 
@@ -32,18 +28,13 @@ const loginRoute = '/login';
 const registerRoute = '/register';
 
 const homeRoute = '/home';
-// const infoRoute = '/info';
-const accountsRoute = '/accounts';
-const settingsRoute = '/settings';
-const editInfoRoute = '/info';
+const infoRoute = '/info';
+const accountRoute = '/account';
 
-const userRouteList = [
-  homeRoute,
-  // infoRoute,
-  accountsRoute,
-  settingsRoute,
-  editInfoRoute,
-];
+const companyHomeRoute = '/company_home';
+const templateRoute = '/template';
+
+const adminHomeRoute = '/admin_home';
 
 class Routeconfiguration {
   /// 所有的需要进行正则匹配的path
@@ -52,10 +43,8 @@ class Routeconfiguration {
     Path(registerRoute, (context) => RegisterPage()),
     Path(loginRoute, (context) => LoginPage()),
     Path(homeRoute, (context) => HomePage()),
-    Path(accountsRoute, (context) => AccountsPage()),
-    // Path(infoRoute, (context) => InfoPage()),
-    Path(settingsRoute, (context) => SettingsPage()),
-    Path(editInfoRoute, (context) => EditInfoPage()),
+    Path(infoRoute, (context) => InfoPage()),
+    // Path(accountRoute, (context) => AccountPage()),
     Path(welcomeRoute, (context) => WelcomePage()),
   ];
 
@@ -69,12 +58,7 @@ class Routeconfiguration {
             settings: settings,
           );
         }
-        if (userRouteList.contains(settings.name)) {
-          return NoAnimationMaterialPageRoute<void>(
-            builder: (context) => path.builder(context),
-            settings: settings,
-          );
-        }
+
         return MaterialPageRoute<void>(
           builder: (context) => path.builder(context),
           settings: settings,

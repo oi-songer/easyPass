@@ -29,6 +29,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   
   # 功能性插件
+  http: ^0.13.3 # http包
   dio: ^4.0.0   # http包
   shared_preferences: ^2.0.5  # 状态存储
   flutter_svg: ^0.21.0  # svg图片解析

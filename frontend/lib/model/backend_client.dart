@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 // import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 const String ApiUrl = 'http://121.5.160.8:5000/';
 
@@ -24,7 +25,17 @@ class BackendClient {
     Map<String, String> headers = Map<String, String>.from(
         {"Content-Type": "application/json; charset=UTF-8"});
     if (useToken) {
-      // TODO
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String token = "";
+      if (prefs.containsKey('userToken')) {
+        token = prefs.getString('userToken')!;
+      } else if (prefs.containsKey('companyToken')) {
+        token = prefs.getString('companyToken')!;
+      } else if (prefs.containsKey('adminToken')) {
+        token = prefs.getString('adminToken')!;
+      }
+
+      headers["Authorization"] = "Bearer $token";
     }
 
     var response =

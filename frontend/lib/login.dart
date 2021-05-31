@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:easy_pass/model/user.dart';
+import 'package:easy_pass/utils.dart';
 import 'package:easy_pass/utils/app_theme.dart';
 import 'package:easy_pass/utils/components.dart';
 import 'package:flutter/material.dart';
@@ -89,29 +90,13 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-void _login(context, username, password) {
-  var user = User(
-    username: username,
-    password: password,
-  );
+void _login(context, username, password) async {
+  var message = await User.login(username, password);
 
-  user.login().then(
-    (response) async {
-      if (response.data == 'success') {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('user', jsonEncode(user));
-
-        Navigator.of(context)
-            .pushNamedAndRemoveUntil('/home', (route) => false);
-      } else {
-        Fluttertoast.showToast(
-            msg: response.data,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            webPosition: "center");
-      }
-    },
-  );
+  toast(message);
+  if (message == '登陆成功') {
+    Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+  }
 }
 
 Future<bool> checkLogin() async {

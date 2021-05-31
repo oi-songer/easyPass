@@ -90,6 +90,63 @@ class Company {
     return dic['message'];
   }
 
+  static Future<String?> modifyPassword(
+      String oldPassword, String newPassword) async {
+    var res = await BackendClient().post('/company/modify_password', {
+      "old_password": oldPassword,
+      "new_password": newPassword,
+    });
+    Map<String, dynamic> data = json.decode(res.body);
+
+    if (res.statusCode != HttpStatus.ok) {
+      toast(data['message']);
+      return null;
+    }
+
+    return data['message'];
+  }
+
+  static Future<Map<String, dynamic>?> getOauthKey() async {
+    var res = await BackendClient().get('/company/get_oauth_key', {});
+    Map<String, dynamic> data = json.decode(res.body);
+
+    if (res.statusCode != HttpStatus.ok) {
+      toast(data['message']);
+      return null;
+    }
+
+    return data;
+  }
+
+  static Future<String?> regenerateOauthKey() async {
+    var res = await BackendClient().post('/company/regenerate_oauth_key', {});
+    Map<String, dynamic> data = json.decode(res.body);
+
+    if (res.statusCode != HttpStatus.ok) {
+      toast(data['message']);
+      return null;
+    }
+
+    return data['message'];
+  }
+
+  static Future<String?> approve(int companyId, String status) async {
+    var res = await BackendClient().post(
+        '/company/approve',
+        {
+          "company_id": companyId,
+          "status": status,
+        },
+        useToken: true);
+    var data = json.decode(res.body);
+
+    if (res.statusCode != HttpStatus.ok) {
+      toast(data['message']);
+      return null;
+    }
+    return data['message'];
+  }
+
   static Future<bool> check() async {
     var res = await BackendClient().post('/oauth/check', {}, useToken: true);
     var data = json.decode(res.body);

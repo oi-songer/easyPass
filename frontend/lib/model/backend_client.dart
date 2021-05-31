@@ -21,7 +21,7 @@ class BackendClient {
 
   Future<http.Response> post(String path, Map<String, dynamic> body,
       {bool useToken = true}) async {
-    var url = Uri.parse(ApiUrl + path);
+    var url = Uri.http(ApiUrl, path);
     Map<String, String> headers = Map<String, String>.from(
         {"Content-Type": "application/json; charset=UTF-8"});
     if (useToken) {
@@ -40,6 +40,32 @@ class BackendClient {
 
     var response =
         await http.post(url, body: jsonEncode(body), headers: headers);
+    print('!Response status: ${response.statusCode}');
+    print('!Response body: ${response.body}');
+
+    return response;
+  }
+
+  Future<http.Response> get(String path, Map<String, dynamic> body,
+      {bool useToken = true}) async {
+    var url = Uri.http(ApiUrl, path, body);
+    Map<String, String> headers = Map<String, String>.from(
+        {"Content-Type": "application/json; charset=UTF-8"});
+    if (useToken) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String token = "";
+      if (prefs.containsKey('userToken')) {
+        token = prefs.getString('userToken')!;
+      } else if (prefs.containsKey('companyToken')) {
+        token = prefs.getString('companyToken')!;
+      } else if (prefs.containsKey('adminToken')) {
+        token = prefs.getString('adminToken')!;
+      }
+
+      headers["Authorization"] = "Bearer $token";
+    }
+
+    var response = await http.get(url, headers: headers);
     print('!Response status: ${response.statusCode}');
     print('!Response body: ${response.body}');
 

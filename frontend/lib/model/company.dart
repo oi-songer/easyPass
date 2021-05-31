@@ -6,9 +6,15 @@ import 'package:easy_pass/utils/function.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Company {
-  String username;
+  late int companyId;
+  late String username;
+  late String description;
 
-  Company._create(String username) : username = username;
+  Company._fromJson(Map<String, dynamic> dict) {
+    companyId = dict['company_id']!;
+    username = dict['username']!;
+    description = dict['description']!;
+  }
 
   static Future<Company?> get() async {
     var res = await BackendClient().post("/company/get", {}, useToken: true);
@@ -19,9 +25,32 @@ class Company {
       return null;
     }
 
-    var user = Company._create(data['company']['username']);
+    var user = Company._fromJson(data['company']);
 
     return user;
+  }
+
+  static Future<List<Company>?> gets(String keywords, String status) async {
+    var res = await BackendClient().post(
+        "/company/gets",
+        {
+          "keywords": keywords,
+          "status": status,
+        },
+        useToken: true);
+    var data = json.decode(res.body);
+
+    if (res.statusCode != HttpStatus.ok) {
+      toast(data['message']);
+      return null;
+    }
+
+    List<Company> companyList = [];
+    for (var company in data['companies']) {
+      companyList.add(Company._fromJson(company));
+    }
+
+    return companyList;
   }
 
   static Future<String> login(String username, String password) async {
@@ -45,12 +74,14 @@ class Company {
     return data['message'];
   }
 
-  static Future<String> register(String username, String password) async {
+  static Future<String> register(
+      String username, String password, String description) async {
     var res = await BackendClient().post(
         "/company/register",
         {
           "username": username,
           "password": password,
+          "description": description,
         },
         useToken: false);
     var data = res.body;

@@ -59,6 +59,22 @@ class Admin {
     return dic['message'];
   }
 
+  static Future<String?> modifyPassword(
+      String oldPassword, String newPassword) async {
+    var res = await BackendClient().post('/admin/modify_password', {
+      "old_password": oldPassword,
+      "new_password": newPassword,
+    });
+    Map<String, dynamic> data = json.decode(res.body);
+
+    if (res.statusCode != HttpStatus.ok) {
+      toast(data['message']);
+      return null;
+    }
+
+    return data['message'];
+  }
+
   static Future<bool> check() async {
     var res = await BackendClient().post('/oauth/check', {}, useToken: true);
     var data = json.decode(res.body);

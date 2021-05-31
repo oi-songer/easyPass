@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:html';
 
 import 'package:easy_pass/model/backend_client.dart';
-import 'package:easy_pass/utils.dart';
+import 'package:easy_pass/utils/function.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class User {
@@ -63,6 +63,24 @@ class User {
 
     return dic['message'];
   }
+
+  static Future<String?> modifyPassword(
+      String oldPassword, String newPassword) async {
+    var res = await BackendClient().post('/user/modify_password', {
+      "old_password": oldPassword,
+      "new_password": newPassword,
+    });
+    Map<String, dynamic> data = json.decode(res.body);
+
+    if (res.statusCode != HttpStatus.ok) {
+      toast(data['message']);
+      return null;
+    }
+
+    return data['message'];
+  }
+
+  // TODO modify user info
 
   static Future<bool> check() async {
     var res = await BackendClient().post('/oauth/check', {}, useToken: true);

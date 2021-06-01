@@ -212,7 +212,18 @@ def third_party_register():
 @user_login_required
 def get():
     # TODO
-    pass
+    user = jwt_auth.current_user()
+
+    accounts = user.accounts
+
+    return jsonify(
+        message= 'succeed',
+        accounts= [
+            account.to_dict()
+            for account in accounts
+        ]
+    ), HTTPStatus.OK
+
 
 @bp.route('/remove', methods=['POST'])
 @jwt_auth.login_required

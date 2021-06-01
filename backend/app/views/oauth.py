@@ -3,6 +3,7 @@
 from re import template
 import time
 import typing
+from flask import json
 from flask.globals import current_app
 from werkzeug.exceptions import BadRequest
 from app.status_code import FORBIDDEN, MISSING_ARGUMENT
@@ -10,7 +11,7 @@ from app.utils import encode_password, encode_with_nonce_and_timestamp
 from http import HTTPStatus
 from flask.json import jsonify
 from app import db, models, redis
-from app.auth.jwt import auth_access_token_required, generate_jwt_token, generate_jwt_token_for_user, jwt_auth, refresh_token_required, user_login_required
+from app.auth.jwt import auth_access_token_required, generate_jwt_token, generate_jwt_token_for_user, jwt_auth, refresh_token_required, require_login, user_login_required
 from flask import Blueprint, request
 
 bp = Blueprint('oauth', __name__, url_prefix='/oauth')
@@ -192,4 +193,12 @@ def refresh_token():
         message='succeed',
         access_token=access_token,
         refresh_token=refresh_token,
+    ), HTTPStatus.OK
+
+@bp.route('/check', methods=['POST'])
+@jwt_auth.login_required
+@require_login([models.User, models.Company, models.Admin])
+def check():
+    return jsonify(
+        message='succeed',
     ), HTTPStatus.OK

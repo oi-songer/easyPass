@@ -5,7 +5,7 @@ from app.utils import encode_password
 from http import HTTPStatus
 from flask.json import jsonify
 from app import db, models
-from app.auth.jwt import generate_jwt_token, generate_jwt_token_for_user, jwt_auth, user_login_required
+from app.auth.jwt import generate_jwt_token, generate_jwt_token_for_user, jwt_auth, require_login, user_login_required
 from flask import Blueprint, request
 
 bp = Blueprint('user', __name__, url_prefix='/user')
@@ -19,6 +19,8 @@ def register():
     username = data.get('username', None)
     password = data.get('password', None)
     email = data.get('email', None)
+
+    print(data)
     
     if (username is None or password is None or email is None):
         return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
@@ -63,6 +65,18 @@ def login():
 
     resp = jsonify({"message": "登陆成功", "token":token})
     return resp, HTTPStatus.OK
+
+@bp.route('/get', methods=['POST'])
+@jwt_auth.login_required
+@require_login([models.User])
+def get():
+    user : models.User = jwt_auth.current_user()
+
+    return jsonify(
+        message='succeed',
+        user=user.to_dict(),
+    ), HTTPStatus.OK
+
 
 @bp.route('/modify_user_info', methods=['POST'])
 @jwt_auth.login_required

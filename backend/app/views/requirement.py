@@ -54,6 +54,9 @@ def remove():
         
     template_id = data.get('template_id', None)
 
+    if (template_id is None):
+        return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
+
     requirement = models.Requirement.query.filter_by(company_id = company.id, template_id = template_id).first()
     if (requirement is None):
         return jsonify(message='该需求已经不存在'), HTTPStatus.BAD_REQUEST

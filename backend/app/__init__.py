@@ -1,4 +1,6 @@
+from flask.globals import current_app
 from app.utils import encode_password
+from flask_request_logger import RequestLogger
 import os
 import click
 
@@ -10,6 +12,8 @@ from flask_cors import CORS
 
 db = SQLAlchemy()
 redis = StrictRedis(host='121.5.160.8', port=6379, db=0, password='redis_pass')
+
+# req_logger = RequestLogger()
 
 # TIP
 # 该函数是一个应用工厂函数
@@ -42,7 +46,8 @@ def create_app(test_config=None):
     ]
     for bp in bp_list:
         app.register_blueprint(bp)
-    
+
+    # req_logger.init_app(app)
 
     # a simple page that says hello
 

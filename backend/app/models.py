@@ -22,12 +22,19 @@ class Template(db.Model):
         self.description = description
         self.status = 'waiting'
 
-    def to_dict(self):
+    def to_dict(self, company_id = 0):
+        if (company_id != 0):
+            requirement = self.requirements.filter_by(company_id=company_id).first()
+            if (requirement != None):
+                req_dic = requirement.to_dict()
+            else:
+                req_dic = {}
         return {
             'template_id': self.id,
             'title': self.title,
             'description': self.description,
             'status': self.status,
+            'requirement': req_dic,
         }
 
 
@@ -104,6 +111,15 @@ class Account(db.Model):
 
     def __repr__(self):
         return '<User-Company %r-%r>' % self.user
+
+    def to_dict(self):
+        return {
+            'account_id': self.id,
+            'user_id': self.user_id,
+            'company_id': self.company_id,
+            'company_name': self.company.username,
+            'company_description': self.company.description,
+        }
 
 
 class Requirement(db.Model):

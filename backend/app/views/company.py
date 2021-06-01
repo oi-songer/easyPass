@@ -3,7 +3,7 @@ import typing
 from app.status_code import MISSING_ARGUMENT
 from flask import json
 from app.auth.oauth import generate_oauth_key
-from app.auth.jwt import admin_login_required, company_login_required
+from app.auth.jwt import admin_login_required, company_login_required, require_login
 from app.auth.jwt import jwt_auth, generate_jwt_token_for_company
 from http import HTTPStatus
 from app import models, db
@@ -154,12 +154,13 @@ def approve():
     return jsonify({"message": "succeed"}), HTTPStatus.OK
 
 
-@bp.route('/get', methods=['GET'])
+@bp.route('/gets', methods=['GET'])
 @jwt_auth.login_required
 @admin_login_required
-def get():
+def gets():
     
     data = request.args
+    # TODO add keywords filter?
     status = data.get('status', None)
 
     if (status is None):
@@ -178,4 +179,25 @@ def get():
             company.to_dict()
             for company in companies
         ] 
+    }), HTTPStatus.OK
+
+@bp.route('/get', methods=['GET'])
+@jwt_auth.login_required
+@require_login([models.Company, models.Admin, models.User])
+def get():
+    company : models.Company = jwt_auth.current_user()
+
+    data = request.args
+    company_id = data.get('company_id', None)
+
+    if (company_id is None):
+        if (isinstance(company, models.company)):
+            company_id = company.id
+        else:
+            return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
+
+    company = models.Company.query.get(company_id)
+
+    return jsonify({
+        'company': company.to_dcit(),
     }), HTTPStatus.OK

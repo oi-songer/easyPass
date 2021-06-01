@@ -44,33 +44,52 @@ def create():
 @jwt_auth.login_required
 @require_login([models.User, models.Company, models.Admin])
 def get():
+    user = jwt_auth.current_user()
+
     data = request.args
     status = data.get('status', None)
     account_id = data.get('account_id', None)
+    # TODO use keywords
 
     if (status is None):
         return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
-    if (status not in ['approved', 'waiting', 'all']):
+    if (status not in ['approved', 'waiting', 'all', 'others', 'mine']):
         return jsonify(message='status参数不合法'), HTTPStatus.BAD_REQUEST
 
-    if (account_id != None):
-        account : models.Account = models.Account.get(account_id)
+    templates = models.Template.query
+    if (isinstance(user, models.Company)):
+        if (status not in ['all', 'mine', 'others']):
+            return jsonify(message='status参数不合法'), HTTPStatus.BAD_REQUEST
 
-        # 找到该企业用户要求的所有Template
-        templates = models.Template.query\
-            .join(models.Requirement, models.Requirement.template_id == models.Template.id)\
-            .filter(models.Requirement.company_id == account.company_id)
+        if (status == "mine"):
+            templates = models.Template.query.filter_by(status='approved')\
+                .join(models.Requirement, models.Requirement.template_id == models.Template.id)\
+                .filter(models.Requirement.company_id == user.id)
 
-    else:
-        templates = models.Template.query
+    elif (isinstance(user, models.Admin)):
+        if (status not in ['waiting', 'approved', 'all']):
+            return jsonify(message='status参数不合法'), HTTPStatus.BAD_REQUEST
+            
+        if (status in ['waiting', 'approved']):
+            templates = models.Template.query.filter_by(status=status)
+    elif (isinstance(user, models.User)):
+        if (status not in ['all', 'others']):
+            return jsonify(message='status参数不合法'), HTTPStatus.BAD_REQUEST
 
-    print("! count of templates: ", templates.count())
+        # TODO 获取用户没用过的template（用户，无信息）
 
-    templates : typing.List[models.Template]
-    if (status != 'all'):
-        templates = templates.filter_by(status=status).all()
-    else:
-        templates = templates.all()
+
+    # print("! count of templates: ", templates.count())
+
+
+    # 如果是企业在请求，带上权限信息
+    if (isinstance(user, models.Company)):
+        return jsonify({
+            'templates': [
+                template.to_dict(company_id=user.id)
+                for template in templates
+            ]
+        }), HTTPStatus.OK
 
     return jsonify({
         'templates': [
@@ -78,6 +97,7 @@ def get():
             for template in templates
         ]
     }), HTTPStatus.OK
+
 
 
 @bp.route('/approve', methods=['POST'])

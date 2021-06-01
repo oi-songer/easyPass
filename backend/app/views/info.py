@@ -75,21 +75,22 @@ def get():
 
     data = request.args
     keywords = data.get('keywords', None)
-    filter_method = data.get('filter_method', None)
+    # filter_method = data.get('filter_method', None)
 
-    if (keywords is None or filter_method is None):
+    if (keywords is None): # or filter_method is None):
         return jsonify(message=MISSING_ARGUMENT), HTTPStatus.BAD_REQUEST
-    if (filter_method not in ['我的', '全部']):
-        return jsonify(message='filter_method 数值不合法'), HTTPStatus.BAD_REQUEST
+    # if (filter_method not in ['我的', '全部']):
+    #     return jsonify(message='filter_method 数值不合法'), HTTPStatus.BAD_REQUEST
 
     keyword_list = ['%' + keyword.strip() + '%' for keyword in keywords.split()]
 
-    if (filter_method=='我的'):
-        infos = user.infos
-    else:
-        infos = models.infos.query
+    infos = user.infos
+    # if (filter_method=='我的'):
+    #     infos = user.infos
+    # else:
+    #     infos = models.infos.query
 
-    # TODO test is this work
+    # TODO test if this work
     # if has keywords, filter keywords in title or content
     if (keywords != ''):
         infos = infos.filter(
@@ -103,18 +104,19 @@ def get():
             ),
         )
 
+    # info_list = [
+    #     {
+    #         'info_id': info.id,
+    #         'title': info.template.title,
+    #         'modify_time': info.modify_time,
+    #     } for info in infos.all()
+    # ]
     info_list = [
-        {
-            'info_id': info.id,
-            'title': info.template.title,
-            'modify_time': info.modify_time,
-            'created': True,
-        } for info in infos.all()
+        info.to_dict() for info in infos.all()
     ]
 
     return jsonify({
-        'message': 'success',
-        'code': 0,
+        'message': 'succeed',
         'infos': info_list,
     }), HTTPStatus.OK
 

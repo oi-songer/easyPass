@@ -1,11 +1,13 @@
 import 'dart:math';
 
+import 'package:easy_pass/model/account.dart';
 import 'package:easy_pass/utils/components.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 // import 'package:groovin_widgets/groovin_widgets.dart';
 import 'package:neuomorphic_container/neuomorphic_container.dart';
+import 'package:useful_widgets/widgets/future/future_widget.dart';
 // import 'package:toggle_switch/toggle_switch.dart';
 
 class AccountView extends StatefulWidget {
@@ -16,11 +18,14 @@ class AccountView extends StatefulWidget {
 }
 
 class _AccountViewState extends State<AccountView> {
-  List<String> accountList = [];
+  late Future<List<Account>?> accountList;
   final searchController = TextEditingController();
 
-  void loadMoreAccount() async {
-    // TODO
+  @override
+  void initState() {
+    super.initState();
+
+    accountList = Account.get();
   }
 
   @override
@@ -39,27 +44,6 @@ class _AccountViewState extends State<AccountView> {
                   style: TitleTextStyle,
                 ),
                 Expanded(child: SizedBox()),
-                // ToggleSwitch(
-                //   initialLabelIndex: filterIndex,
-                //   minWidth: 70.0,
-                //   cornerRadius: 20.0,
-                //   activeBgColor: AppTheme.mainGreen,
-                //   activeFgColor: Colors.white,
-                //   inactiveBgColor: Colors.grey,
-                //   inactiveFgColor: Colors.white,
-                //   labels: ["所有", "我的"],
-                //   onToggle: (index) {
-                //     setState(() {
-                //       filterIndex = index;
-                //       if (index == 0) {
-                //         filterMethod = "所有";
-                //       } else {
-                //         filterMethod = "我的";
-                //       }
-                //     });
-                //     refreshTitle();
-                //   },
-                // ),
               ],
             ),
           ),
@@ -91,42 +75,38 @@ class _AccountViewState extends State<AccountView> {
               ],
             ),
           ),
-          Expanded(
-            // child: AnimationLimiter(
-            child: ListView.builder(
-              itemCount: accountList.length + 2,
-              itemBuilder: (BuildContext context, int index) {
-                if (index == accountList.length + 1) {
-                  return SizedBox(height: 50);
-                }
-                if (index == accountList.length) {
-                  return Center(
-                    child: MaterialButton(
-                      child: Text("点击加载更多"),
-                      onPressed: () {
-                        loadMoreAccount();
-                      },
-                    ),
-                  );
-                }
+          FutureWidget<List<Account>>(
+              future: (context) => accountList,
+              builder: (context, result) {
+                return Expanded(
+                  // child: AnimationLimiter(
+                  child: ListView.builder(
+                    itemCount: result.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == result.length) {
+                        return SizedBox(height: 50);
+                      }
 
-                return AnimationConfiguration.staggeredList(
-                  position: index,
-                  duration: const Duration(milliseconds: 200),
-                  child: SlideAnimation(
-                    verticalOffset: 50.0,
-                    child: FadeInAnimation(
-                      child: Padding(
-                        padding: new EdgeInsets.only(
-                            left: 30, right: 30, top: 10, bottom: 10),
-                        child: AccountCard(title: accountList[index]),
-                      ),
-                    ),
+                      return AnimationConfiguration.staggeredList(
+                        position: index,
+                        duration: const Duration(milliseconds: 200),
+                        child: SlideAnimation(
+                          verticalOffset: 50.0,
+                          child: FadeInAnimation(
+                            child: Padding(
+                              padding: new EdgeInsets.only(
+                                  left: 30, right: 30, top: 10, bottom: 10),
+                              child: AccountCard(
+                                  account:
+                                      result[index]), //accountList[index]),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 );
-              },
-            ),
-          ),
+              }),
           // ),
         ],
       ),
@@ -135,9 +115,9 @@ class _AccountViewState extends State<AccountView> {
 }
 
 class AccountCard extends StatelessWidget {
-  AccountCard({Key? key, required this.title}) : super(key: key);
+  AccountCard({Key? key, required this.account}) : super(key: key);
 
-  final String title;
+  final Account account;
 
   @override
   Widget build(BuildContext context) {
@@ -148,12 +128,8 @@ class AccountCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              this.title,
+              account.companyName,
               style: AccountCardTitleTextStyle,
-            ),
-            SizedBox(
-              height: 30,
-              child: Text("content"),
             ),
             Align(
               alignment: Alignment.centerRight,

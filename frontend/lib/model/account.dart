@@ -8,12 +8,14 @@ class Account {
   late int userId;
   late int companyId;
   late String companyName;
+  late String companyDescription;
 
   Account._fromJson(Map<String, dynamic> dict) {
     accountId = dict['account_id'];
     userId = dict['user_id'];
     companyId = dict['company_id'];
     companyName = dict['company_name'];
+    companyDescription = dict['company_description'];
   }
 
   static Future<List<Account>?> get() async {

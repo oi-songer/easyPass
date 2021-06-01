@@ -30,12 +30,15 @@ class _InfoPageState extends State<InfoPage> {
   @override
   void initState() {
     super.initState();
-
-    // TODO 如果不是isNew，那么获取info_auth
   }
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as InfoArguments;
+    isNew = args.isNew;
+    info = args.info;
+    // TODO 如果不是isNew，那么获取info_auth
+
     return Scaffold(
       body: Column(
         children: [
@@ -135,7 +138,12 @@ class _InfoDetailCardState extends State<InfoDetailCard> {
                   );
                 },
               )
-            : Text(widget.info!.title),
+            : Center(
+                child: Text(
+                  widget.info!.title,
+                  style: InfoDetailCardTitleTextStyle,
+                ),
+              ),
       ),
       SizedBox(
         height: 10,
@@ -155,6 +163,8 @@ class _InfoDetailCardState extends State<InfoDetailCard> {
     ];
 
     if (!widget.isNew) {
+      contentController.text = widget.info!.content!;
+
       titleList.add(
         SizedBox(
             child: Center(

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:easy_pass/model/info.dart';
 import 'package:easy_pass/user/info.dart';
 import 'package:easy_pass/utils/app_theme.dart';
 import 'package:easy_pass/utils/components.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 // import 'package:groovin_widgets/groovin_widgets.dart';
 import 'package:neuomorphic_container/neuomorphic_container.dart';
 import 'package:toggle_switch/toggle_switch.dart';
+import 'package:useful_widgets/widgets/future/future_widget.dart';
 
 class InfoView extends StatefulWidget {
   const InfoView({Key? key}) : super(key: key);
@@ -19,7 +21,7 @@ class InfoView extends StatefulWidget {
 
 class _InfoViewState extends State<InfoView> {
   int filterIndex = 1;
-  List<String> infoList = [];
+  late Future<List<Info>?> infoList;
   String filterMethod = "我的";
   final searchController = TextEditingController();
   var random = Random(0); // TODO remove this
@@ -27,12 +29,12 @@ class _InfoViewState extends State<InfoView> {
   @override
   void initState() {
     super.initState();
-    refreshTitle();
+    infoList = Info.get("", filterMethod);
   }
 
   void refreshTitle() async {
     setState(() {
-      infoList.clear();
+      // infoList.clear();
     });
 
     await Future.delayed(const Duration(microseconds: 1));
@@ -42,7 +44,7 @@ class _InfoViewState extends State<InfoView> {
     setState(() {
       for (int i = 0; i < 10; i++) {
         int rand = random.nextInt(200);
-        infoList.add('Title$rand $i');
+        // infoList.add('Title$rand $i');
       }
     });
   }
@@ -119,42 +121,36 @@ class _InfoViewState extends State<InfoView> {
               ],
             ),
           ),
-          Expanded(
-            // child: AnimationLimiter(
-            child: ListView.builder(
-              itemCount: infoList.length + 2,
-              itemBuilder: (BuildContext context, int index) {
-                if (index == infoList.length + 1) {
-                  return SizedBox(height: 50);
-                }
-                if (index == infoList.length) {
-                  return Center(
-                    child: MaterialButton(
-                      child: Text("点击加载更多"),
-                      onPressed: () {
-                        loadMoreInfo();
-                      },
-                    ),
-                  );
-                }
+          FutureWidget<List<Info>>(
+              future: (context) => infoList,
+              builder: (context, result) {
+                return Expanded(
+                  // TODO
+                  child: ListView.builder(
+                    itemCount: result.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == result.length) {
+                        return SizedBox(height: 50);
+                      }
 
-                return AnimationConfiguration.staggeredList(
-                  position: index,
-                  duration: const Duration(milliseconds: 200),
-                  child: SlideAnimation(
-                    verticalOffset: 50.0,
-                    child: FadeInAnimation(
-                      child: Padding(
-                        padding: new EdgeInsets.only(
-                            left: 30, right: 30, top: 10, bottom: 10),
-                        child: InfoCard(title: infoList[index]),
-                      ),
-                    ),
+                      return AnimationConfiguration.staggeredList(
+                        position: index,
+                        duration: const Duration(milliseconds: 200),
+                        child: SlideAnimation(
+                          verticalOffset: 50.0,
+                          child: FadeInAnimation(
+                            child: Padding(
+                              padding: new EdgeInsets.only(
+                                  left: 30, right: 30, top: 10, bottom: 10),
+                              child: InfoCard(info: result[index]),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 );
-              },
-            ),
-          ),
+              }),
           // ),
         ],
       ),
@@ -163,9 +159,9 @@ class _InfoViewState extends State<InfoView> {
 }
 
 class InfoCard extends StatelessWidget {
-  InfoCard({Key? key, required this.title}) : super(key: key);
+  InfoCard({Key? key, required this.info}) : super(key: key);
 
-  final String title;
+  final Info info;
 
   @override
   Widget build(BuildContext context) {
@@ -176,12 +172,12 @@ class InfoCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              this.title,
+              info.title,
               style: InfoCardTitleTextStyle,
             ),
             SizedBox(
               height: 30,
-              child: Text("content"),
+              child: Text("更新于：" + info.modifyTime),
             ),
             Align(
               alignment: Alignment.centerRight,

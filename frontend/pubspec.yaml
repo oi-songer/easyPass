@@ -48,7 +48,8 @@ dependencies:
   filter_list: ^1.0.0 # 标签筛选功能
   flutter_staggered_animations: ^1.0.0  # 加载动画
   # groovin_widgets: ^2.0.0 # 功能性控件，如下拉框
-  toggle_switch: "^0.1.9" # switch按钮
+  toggle_switch: ^0.1.9 # switch按钮
+  flutter_markdown: ^0.6.2  # markdown解析
 
 
 dev_dependencies:

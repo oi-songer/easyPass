@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:easy_pass/model/account.dart';
+import 'package:easy_pass/user/account.dart';
 import 'package:easy_pass/utils/components.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -121,31 +122,37 @@ class AccountCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NeuomorphicContainer(
-      child: Padding(
-        padding: new EdgeInsets.only(left: 20, right: 20, top: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              account.companyName,
-              style: AccountCardTitleTextStyle,
-            ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Icon(
-                Icons.more_horiz,
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).pushNamed('/account',
+            arguments: AccountArguments(account: account));
+      },
+      child: NeuomorphicContainer(
+        child: Padding(
+          padding: new EdgeInsets.only(left: 20, right: 20, top: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                account.companyName,
+                style: AccountCardTitleTextStyle,
               ),
-            )
-          ],
+              Align(
+                alignment: Alignment.centerRight,
+                child: Icon(
+                  Icons.more_horiz,
+                ),
+              )
+            ],
+          ),
         ),
+        borderRadius: BorderRadius.circular(15.0),
+        color: Color.fromRGBO(239, 238, 238, 1.0),
+        style: NeuomorphicStyle.Flat,
+        // intensity: 0.35,
+        offset: Offset(15, 15),
+        blur: 30,
       ),
-      borderRadius: BorderRadius.circular(15.0),
-      color: Color.fromRGBO(239, 238, 238, 1.0),
-      style: NeuomorphicStyle.Flat,
-      // intensity: 0.35,
-      offset: Offset(15, 15),
-      blur: 30,
     );
   }
 }

@@ -19,6 +19,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
   final repeatPasswordController = TextEditingController();
+  final emailController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,31 +32,37 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  SizedBox(height: 80),
+                  SizedBox(height: 40),
                   SvgPicture.asset(
                     'assets/images/logo/easypass-logo-with-text.svg',
                   ),
-                  SizedBox(height: 120),
+                  SizedBox(height: 60),
                   MyTextField(
                     hintText: "用户名",
                     restorationId: "username_text_field",
                     controller: usernameController,
                   ),
-                  SizedBox(height: 40),
+                  SizedBox(height: 30),
                   MyTextField(
                     hintText: "密码",
-                    restorationId: "username_text_field",
+                    restorationId: "password_text_field",
                     obscurText: true,
                     controller: passwordController,
                   ),
-                  SizedBox(height: 40),
+                  SizedBox(height: 30),
                   MyTextField(
                     hintText: "请重复密码",
-                    restorationId: "username_text_field",
+                    restorationId: "repeat_password_text_field",
                     obscurText: true,
                     controller: repeatPasswordController,
                   ),
-                  SizedBox(height: 50),
+                  SizedBox(height: 30),
+                  MyTextField(
+                    hintText: "邮箱",
+                    restorationId: "email_text_field",
+                    controller: emailController,
+                  ),
+                  SizedBox(height: 30),
                   // _LoginButton(),
                   MyButton(
                       child: Text("注册"),
@@ -63,6 +70,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         var username = usernameController.text;
                         var password = passwordController.text;
                         var repeatPassword = repeatPasswordController.text;
+                        var email = emailController.text;
 
                         if (password != repeatPassword) {
                           Fluttertoast.showToast(
@@ -70,11 +78,19 @@ class _RegisterPageState extends State<RegisterPage> {
                               gravity: ToastGravity.BOTTOM,
                               timeInSecForIosWeb: 1,
                               webPosition: "center");
+                        } else if (!emailCheck(email)) {
+                          Fluttertoast.showToast(
+                              msg: "邮箱格式不合法",
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                              webPosition: "center");
                         } else {
-                          _register(context, username, password);
+                          _register(context, username, password, email);
                         }
                       }),
-                  SizedBox(height: 50),
+                  Expanded(
+                    child: SizedBox(),
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -88,6 +104,9 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ],
                   ),
+                  SizedBox(
+                    height: 20,
+                  ),
                 ],
               ),
             ),
@@ -98,19 +117,34 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 }
 
-void _register(context, username, password) {
-  var user = User(
-    username: username,
-    password: password,
-  );
+void _register(context, username, password, email) async {
+  String message = await User.register(username, password, email);
 
-  user.register().then(
-    (response) async {
-      Fluttertoast.showToast(
-          msg: response.data,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          webPosition: "center");
-    },
-  );
+  Fluttertoast.showToast(
+      msg: message,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      webPosition: "center");
+
+  // var user = User(
+  //   username: username,
+  //   password: password,
+  // );
+
+  // user.register().then(
+  //   (response) async {
+  //     Fluttertoast.showToast(
+  //         msg: response.data,
+  //         gravity: ToastGravity.BOTTOM,
+  //         timeInSecForIosWeb: 1,
+  //         webPosition: "center");
+  //   },
+  // );
+}
+
+bool emailCheck(String input) {
+  if (input.isEmpty) return false;
+  // 邮箱正则
+  String regexEmail = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*\$";
+  return RegExp(regexEmail).hasMatch(input);
 }

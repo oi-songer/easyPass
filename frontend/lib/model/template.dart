@@ -9,12 +9,18 @@ class Template {
   late String title;
   late String description;
   late String status;
+  late int? requirementId;
+  late bool? optional;
+  late String? permission;
 
   Template._fromJson(Map<String, dynamic> dict) {
     templateId = dict['template_id']!;
     title = dict['title']!;
     description = dict['description']!;
     status = dict['status']!;
+    requirementId = dict['requirement']!['requirement_id'];
+    optional = dict['requirement']!['optional'];
+    permission = dict['requirement']!['permission'];
   }
 
   static Future<String?> create(String title, String description) async {

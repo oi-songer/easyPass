@@ -44,7 +44,7 @@ class Routeconfiguration {
     Path(loginRoute, (context) => LoginPage()),
     Path(homeRoute, (context) => HomePage()),
     Path(infoRoute, (context) => InfoPage()),
-    // Path(accountRoute, (context) => AccountPage()),
+    Path(accountRoute, (context) => AccountPage()),
     Path(welcomeRoute, (context) => WelcomePage()),
   ];
 

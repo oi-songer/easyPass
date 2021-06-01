@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:easy_pass/model/user.dart';
-import 'package:easy_pass/utils.dart';
 import 'package:easy_pass/utils/app_theme.dart';
 import 'package:easy_pass/utils/components.dart';
+import 'package:easy_pass/utils/function.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -65,7 +65,9 @@ class _LoginPageState extends State<LoginPage> {
                       _login(context, username, password);
                     },
                   ),
-                  SizedBox(height: 50),
+                  Expanded(
+                    child: SizedBox(),
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -79,6 +81,9 @@ class _LoginPageState extends State<LoginPage> {
                         },
                       ),
                     ],
+                  ),
+                  SizedBox(
+                    height: 20,
                   ),
                 ],
               ),

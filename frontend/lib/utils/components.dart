@@ -396,3 +396,25 @@ class MyAccountCard extends StatelessWidget {
     );
   }
 }
+
+class MyAwaitWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            CircularProgressIndicator(),
+            Padding(
+              padding: EdgeInsets.all(10),
+            ),
+            Text("加载中，请稍候")
+          ],
+        ),
+      ),
+    );
+  }
+}

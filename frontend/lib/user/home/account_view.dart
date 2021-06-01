@@ -78,6 +78,7 @@ class _AccountViewState extends State<AccountView> {
           ),
           FutureWidget<List<Account>>(
               future: (context) => accountList,
+              awaitWidget: (context) => MyAwaitWidget(),
               builder: (context, result) {
                 return Expanded(
                   // child: AnimationLimiter(

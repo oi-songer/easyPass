@@ -123,6 +123,7 @@ class _InfoViewState extends State<InfoView> {
           ),
           FutureWidget<List<Info>>(
               future: (context) => infoList,
+              awaitWidget: (context) => MyAwaitWidget(),
               builder: (context, result) {
                 return Expanded(
                   // TODO

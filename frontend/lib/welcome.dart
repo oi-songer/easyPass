@@ -1,3 +1,4 @@
+import 'package:easy_pass/model/company.dart';
 import 'package:easy_pass/utils/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -16,6 +17,12 @@ class WelcomePage extends StatelessWidget {
         Navigator.of(context)
             .pushNamedAndRemoveUntil('/home', (route) => false);
       }
+    } else if (prefs.containsKey("companyToken")) {
+      bool check = await Company.check();
+      if (check == true) {
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/company/home', (route) => false);
+      }
     }
     return true;
   }
@@ -25,6 +32,7 @@ class WelcomePage extends StatelessWidget {
     return Scaffold(
       body: FutureWidget<bool>(
         future: (context) => checkLogin(context),
+        awaitWidget: (context) => MyAwaitWidget(),
         builder: (context, result) => Column(
           children: [
             SizedBox(height: 80),
@@ -41,6 +49,15 @@ class WelcomePage extends StatelessWidget {
                     child: Text("用户登录"),
                     onTap: () {
                       Navigator.of(context).pushNamed('/login');
+                    },
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  MyButton(
+                    child: Text("企业用户登录"),
+                    onTap: () {
+                      Navigator.of(context).pushNamed('/company/login');
                     },
                   ),
                   SizedBox(

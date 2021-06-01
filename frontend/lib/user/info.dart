@@ -115,6 +115,7 @@ class _InfoDetailCardState extends State<InfoDetailCard> {
         child: widget.isNew
             ? FutureWidget<List<Template>>(
                 future: (context) => templates,
+                awaitWidget: (context) => Container(),
                 builder: (context, result) {
                   List<DropdownMenuItem<int>> templateList = [];
                   if (widget.isNew) {

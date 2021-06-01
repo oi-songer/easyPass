@@ -103,10 +103,3 @@ void _login(context, username, password) async {
     Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
   }
 }
-
-Future<bool> checkLogin() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  bool ret = prefs.containsKey('user');
-
-  return ret;
-}

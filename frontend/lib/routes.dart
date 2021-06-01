@@ -1,4 +1,8 @@
-import 'package:easy_pass/regitster.dart';
+import 'package:easy_pass/company/home/home.dart';
+import 'package:easy_pass/company/login.dart';
+import 'package:easy_pass/company/register.dart';
+import 'package:easy_pass/company/template.dart';
+import 'package:easy_pass/user/register.dart';
 import 'package:easy_pass/user/account.dart';
 import 'package:easy_pass/user/home/home.dart';
 import 'package:easy_pass/user/info.dart';
@@ -6,7 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_pass/welcome.dart';
 import 'package:easy_pass/test.dart';
-import 'package:easy_pass/login.dart';
+import 'package:easy_pass/user/login.dart';
 
 typedef PathWidgetBuilder = Widget Function(BuildContext);
 
@@ -24,27 +28,40 @@ class Path {
 
 const welcomeRoute = '/';
 const testRoute = '/test'; // TODO
+
+// user pages
 const loginRoute = '/login';
 const registerRoute = '/register';
-
 const homeRoute = '/home';
 const infoRoute = '/info';
 const accountRoute = '/account';
 
-const companyHomeRoute = '/company_home';
+// company pages
+const companyLoginRoute = '/company/login';
+const companyRegisterRoute = '/company/register';
+const companyHomeRoute = '/company/home';
 const templateRoute = '/template';
 
-const adminHomeRoute = '/admin_home';
+// admin pages
+const adminHomeRoute = '/admin/home';
 
 class Routeconfiguration {
   /// 所有的需要进行正则匹配的path
   static List<Path> paths = [
+    // test
     Path(testRoute, (context) => TestPage()),
+    // user
     Path(registerRoute, (context) => RegisterPage()),
     Path(loginRoute, (context) => LoginPage()),
     Path(homeRoute, (context) => HomePage()),
     Path(infoRoute, (context) => InfoPage()),
     Path(accountRoute, (context) => AccountPage()),
+    // company
+    Path(companyLoginRoute, (context) => CompanyLoginPage()),
+    Path(companyRegisterRoute, (context) => CompanyRegisterPage()),
+    Path(companyHomeRoute, (context) => CompanyHomePage()),
+    Path(templateRoute, (context) => TemplatePage()),
+    // all
     Path(welcomeRoute, (context) => WelcomePage()),
   ];
 

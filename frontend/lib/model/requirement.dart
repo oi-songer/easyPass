@@ -47,7 +47,7 @@ class Requirement {
 
   static Future<String?> remove(int requirementId) async {
     var res = await BackendClient().post("/requirement/remove", {
-      "requirement_id": requirementId,
+      "template_id": requirementId,
     });
     var data = json.decode(res.body);
 

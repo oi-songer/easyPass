@@ -32,7 +32,6 @@ class WelcomePage extends StatelessWidget {
     return Scaffold(
       body: FutureWidget<bool>(
         future: (context) => checkLogin(context),
-        awaitWidget: (context) => MyAwaitWidget(),
         builder: (context, result) => Column(
           children: [
             SizedBox(height: 80),

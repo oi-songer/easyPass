@@ -1,3 +1,4 @@
+import 'package:easy_pass/user/account.dart';
 import 'package:easy_pass/user/info.dart';
 import 'package:easy_pass/user/home/account_view.dart';
 import 'package:easy_pass/user/home/info_view.dart';
@@ -23,13 +24,27 @@ class _HomePageState extends State<HomePage>
   void changeFloatingButton(BuildContext context) {
     setState(() {
       // set different params when in different page
-      floatingButton = FloatingActionButton(
-          backgroundColor: AppTheme.lightGreen,
-          child: Icon(Icons.add),
-          onPressed: () {
-            Navigator.of(context)
-                .pushNamed('/info', arguments: InfoArguments(isNew: true));
-          });
+      if (_tabController.index == 0 ||
+          _tabController.index == 3 ||
+          _tabController.index == 1) {
+        floatingButton = null;
+      } else if (_tabController.index == 2) {
+        floatingButton = FloatingActionButton(
+            backgroundColor: AppTheme.lightGreen,
+            child: Icon(Icons.add),
+            onPressed: () {
+              Navigator.of(context)
+                  .pushNamed('/info', arguments: InfoArguments(isNew: true));
+            });
+      }
+      // } else if (_tabController.index == 1) {
+      //   floatingButton = FloatingActionButton(
+      //       backgroundColor: AppTheme.lightGreen,
+      //       child: Icon(Icons.add),
+      //       onPressed: () {
+      //         Navigator.of(context).pushNamed('/account',
+      //             arguments: AccountArguments(isNew: true));
+      //       });
     });
   }
 
@@ -73,10 +88,10 @@ class _HomePageState extends State<HomePage>
         tabIconColor: AppTheme.lightGreen,
         tabSelectedColor: AppTheme.mainGreen,
         onTabItemSelected: (int value) {
-          print(value);
           setState(() {
             _tabController.index = value;
           });
+          changeFloatingButton(context);
         },
         icons: [
           Icons.analytics,

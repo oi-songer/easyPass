@@ -1,5 +1,6 @@
 import 'package:easy_pass/utils/components.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserSettingView extends StatefulWidget {
   const UserSettingView({Key? key}) : super(key: key);
@@ -89,7 +90,9 @@ class _UserSettingViewState extends State<UserSettingView> {
                   style: TextStyle(color: Colors.white),
                 ),
               ),
-              onTap: () {},
+              onTap: () {
+                _logout(context);
+              },
             ),
           ],
         ),
@@ -101,3 +104,10 @@ class _UserSettingViewState extends State<UserSettingView> {
 const SettingTextStyle = const TextStyle(
   fontSize: 20,
 );
+
+void _logout(context) async {
+  var prefs = await SharedPreferences.getInstance();
+  prefs.remove('userToken');
+
+  Navigator.of(context).pushNamedAndRemoveUntil('/welcome', (route) => false);
+}

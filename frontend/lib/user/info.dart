@@ -25,7 +25,7 @@ class _InfoPageState extends State<InfoPage> {
   var selectedValue;
   InfoArguments? arguments;
 
-  // TODO 如果没有info，获取templates，如果有info，获取accounts
+  // TODO 获取accounts(info_auths)
 
   @override
   void initState() {
@@ -37,7 +37,6 @@ class _InfoPageState extends State<InfoPage> {
     final args = ModalRoute.of(context)!.settings.arguments as InfoArguments;
     isNew = args.isNew;
     info = args.info;
-    // TODO 如果不是isNew，那么获取info_auth
 
     return Scaffold(
       body: Column(
@@ -153,7 +152,6 @@ class _InfoDetailCardState extends State<InfoDetailCard> {
         maxLines: 6,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
-          isDense: true,
           contentPadding: EdgeInsets.all(8),
         ),
       ),

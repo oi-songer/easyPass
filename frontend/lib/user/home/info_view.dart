@@ -165,35 +165,41 @@ class InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NeuomorphicContainer(
-      child: Padding(
-        padding: new EdgeInsets.only(left: 20, right: 20, top: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              info.title,
-              style: InfoCardTitleTextStyle,
-            ),
-            SizedBox(
-              height: 30,
-              child: Text("更新于：" + info.modifyTime),
-            ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Icon(
-                Icons.more_horiz,
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).pushNamed('/info',
+            arguments: InfoArguments(info: info, isNew: false));
+      },
+      child: NeuomorphicContainer(
+        child: Padding(
+          padding: new EdgeInsets.only(left: 20, right: 20, top: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                info.title,
+                style: InfoCardTitleTextStyle,
               ),
-            )
-          ],
+              SizedBox(
+                height: 30,
+                child: Text("更新于：" + info.modifyTime),
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Icon(
+                  Icons.more_horiz,
+                ),
+              )
+            ],
+          ),
         ),
+        borderRadius: BorderRadius.circular(15.0),
+        color: Color.fromRGBO(239, 238, 238, 1.0),
+        style: NeuomorphicStyle.Flat,
+        // intensity: 0.35,
+        offset: Offset(15, 15),
+        blur: 30,
       ),
-      borderRadius: BorderRadius.circular(15.0),
-      color: Color.fromRGBO(239, 238, 238, 1.0),
-      style: NeuomorphicStyle.Flat,
-      // intensity: 0.35,
-      offset: Offset(15, 15),
-      blur: 30,
     );
   }
 }

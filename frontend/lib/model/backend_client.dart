@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const String ApiUrl = 'http://121.5.160.8:5000/';
+const String ApiUrl = '121.5.160.8:5000';
 
 class BackendClient {
   static BackendClient _instance = BackendClient._internal();

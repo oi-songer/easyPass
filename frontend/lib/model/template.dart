@@ -45,8 +45,8 @@ class Template {
     }
 
     List<Template> templateList = [];
-    for (var info in data['infos']) {
-      templateList.add(Template._fromJson(info));
+    for (var template in data['templates']) {
+      templateList.add(Template._fromJson(template));
     }
 
     return templateList;

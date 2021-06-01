@@ -87,12 +87,12 @@ class Info {
   }
 
   static Future<String?> drop(int infoId) async {
-    var res = await BackendClient().post("/info/create", {
+    var res = await BackendClient().post("/info/drop", {
       "info_id": infoId,
     });
     var data = json.decode(res.body);
 
-    if (res.statusCode != HttpStatus.created) {
+    if (res.statusCode != HttpStatus.ok) {
       toast(data['message']);
       return null;
     }
